@@ -1464,6 +1464,9 @@ fn append_recording_row(
         subtitle: subtitle.clone(),
         meta_box: meta_box.upcast::<gtk::Widget>(),
     });
+    // The row was inserted before it was registered, so the search filter
+    // could not find it; re-run the filter now that it is known.
+    context.recordings_flow.invalidate_filter();
 
     let select_rows = Rc::clone(&context.recording_rows);
     let select_recording_ref = Rc::clone(&context.selected_recording);
@@ -1645,6 +1648,14 @@ fn show_rename_dialog(context: &ToolContext, path: PathBuf) {
 
 fn rename_recording(context: &ToolContext, path: &Path, new_name: &str) {
     if new_name.is_empty() {
+        return;
+    }
+    if new_name.contains(['/', '\0']) || new_name == "." || new_name == ".." {
+        show_notice(
+            &context.window,
+            &gettext("Could not rename recording"),
+            &gettext("The name cannot contain “/”."),
+        );
         return;
     }
 
@@ -2171,11 +2182,11 @@ fn show_reverse_dialog(context: &ToolContext) {
             return;
         }
 
-        let result = processing::reverse(&path);
-        finish_processed_recording(
+        let path = path.clone();
+        run_processed_task(
             &action_context,
-            result,
-            &gettext("Could not reverse recording"),
+            gettext("Could not reverse recording"),
+            move || processing::reverse(&path),
         );
     });
     dialog.present(Some(&window));
@@ -2224,14 +2235,16 @@ fn show_merge_dialog(context: &ToolContext) {
         }
 
         let index = combo.active().unwrap_or(0) as usize;
-        let result = options
-            .get(index)
-            .ok_or_else(|| anyhow::anyhow!("No recording selected"))
-            .and_then(|second_path| processing::merge(&path, second_path));
-        finish_processed_recording(
+        let path = path.clone();
+        let second_path = options.get(index).cloned();
+        run_processed_task(
             &action_context,
-            result,
-            &gettext("Could not merge recordings"),
+            gettext("Could not merge recordings"),
+            move || {
+                let second_path =
+                    second_path.ok_or_else(|| anyhow::anyhow!("No recording selected"))?;
+                processing::merge(&path, &second_path)
+            },
         );
     });
     dialog.present(Some(&window));
@@ -2307,45 +2320,53 @@ fn export_selected_recording(context: &ToolContext) {
 }
 
 fn show_export_file_dialog(window: &adw::ApplicationWindow, path: PathBuf, options: ExportOptions) {
-    let dialog = gtk::FileChooserNative::new(
-        Some(&gettext("Export recording")),
-        Some(window),
-        gtk::FileChooserAction::Save,
-        Some(&gettext("Export")),
-        Some(&gettext("Cancel")),
-    );
-    dialog.set_current_name(&default_export_name(&path, options.format));
-
     let filter = gtk::FileFilter::new();
     filter.set_name(Some(&export_filter_name(options.format)));
     filter.add_pattern(&format!("*.{}", options.format.extension()));
-    dialog.add_filter(&filter);
+    let filters = gio::ListStore::new::<gtk::FileFilter>();
+    filters.append(&filter);
 
-    let window = window.clone();
-    dialog.run_async(move |dialog, response| {
-        if response == gtk::ResponseType::Accept {
-            if let Some(file) = dialog.file() {
-                let Some(destination) = file.path() else {
-                    show_notice(
-                        &window,
-                        &gettext("Could not export recording"),
-                        &gettext("The selected destination is not a local file."),
-                    );
-                    dialog.destroy();
-                    return;
-                };
-                let destination = destination_with_extension(&destination, options.format);
+    // gtk::FileDialog keeps itself alive for the duration of the async call.
+    // The previous FileChooserNative was dropped as soon as this function
+    // returned, which cancelled the portal request mid-way.
+    let dialog = gtk::FileDialog::builder()
+        .title(gettext("Export recording"))
+        .accept_label(gettext("Export"))
+        .initial_name(default_export_name(&path, options.format))
+        .filters(&filters)
+        .default_filter(&filter)
+        .modal(true)
+        .build();
 
-                run_export_task(&window, path.clone(), destination, options);
-            } else {
-                show_notice(
-                    &window,
-                    &gettext("Could not export recording"),
-                    &gettext("The selected destination is not a local file."),
-                );
+    let parent = window.clone();
+    dialog.save(Some(window), gio::Cancellable::NONE, move |result| {
+        let file = match result {
+            Ok(file) => file,
+            Err(err)
+                if err.matches(gtk::DialogError::Dismissed)
+                    || err.matches(gtk::DialogError::Cancelled) =>
+            {
+                return;
             }
-        }
-        dialog.destroy();
+            Err(err) => {
+                show_notice(
+                    &parent,
+                    &gettext("Could not export recording"),
+                    err.message(),
+                );
+                return;
+            }
+        };
+        let Some(destination) = file.path() else {
+            show_notice(
+                &parent,
+                &gettext("Could not export recording"),
+                &gettext("The selected destination is not a local file."),
+            );
+            return;
+        };
+        let destination = destination_with_extension(&destination, options.format);
+        run_export_task(&parent, path, destination, options);
     });
 }
 

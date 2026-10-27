@@ -11,7 +11,7 @@ anyhow = "1.0"
 glib = "0.22"
 gst = { package = "gstreamer", version = "0.25" }
 gst_app = { package = "gstreamer-app", version = "0.25" }
-gtk = { package = "gtk4", version = "0.11" }
+gtk = { package = "gtk4", version = "0.11", features = ["v4_10"] }
 gettextrs = { package = "gettext-rs", version = "0.7", features = ["gettext-system"] }
 
 [profile.release]
