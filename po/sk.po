@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bigrecorder 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 17:18-0300\n"
+"POT-Creation-Date: 2026-10-27 21:03-0300\n"
 "PO-Revision-Date: 2026-05-27 20:50\n"
 "Last-Translator: BigLinux Team\n"
 "Language-Team: Slovak <sk@li.org>\n"
@@ -11,661 +11,649 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/i18n.rs:241
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:554
+#: src/i18n.rs:268 src/ui/window.rs:602
 msgid "Record"
 msgstr "Nahrať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:174
+#: src/ui/window.rs:215
 msgid "Local voice recorder"
 msgstr "Lokálny hlasový záznamník"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:179
+#: src/ui/window.rs:220
 msgid "Menu"
 msgstr "Menu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:182
+#: src/ui/window.rs:223
 msgid "About"
 msgstr "O aplikácii"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:183
+#: src/ui/window.rs:224
 msgid "Close"
 msgstr "Zavrieť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:226
+#: src/ui/window.rs:267
 msgid "Recordings"
 msgstr "Nahrávky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:238
+#: src/ui/window.rs:279
 msgid "Search recordings"
 msgstr "Vyhľadať nahrávky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:245
+#: src/ui/window.rs:286
 msgid "List view"
 msgstr "Zobrazenie zoznamu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:253
+#: src/ui/window.rs:294
 msgid "Grid view"
 msgstr "Zobrazenie mriežky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:281
+#: src/ui/window.rs:327
 msgid "No recordings yet"
 msgstr "Zatiaľ žiadne nahrávky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:310
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1084
+#: src/ui/window.rs:356 src/ui/window.rs:1453
 msgid "Ready"
 msgstr "Pripravený"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:322
+#: src/ui/window.rs:368
 msgid "Recording time"
 msgstr "Čas nahrávania"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:347
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1092
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1093
+#: src/ui/window.rs:393 src/ui/window.rs:403 src/ui/window.rs:1461
+#: src/ui/window.rs:1462
 msgid "Pause"
 msgstr "Pauza"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:365
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:375
+#: src/ui/window.rs:411 src/ui/window.rs:421
 msgid "Stop"
 msgstr "Stop"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:422
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:520
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:525
+#: src/ui/window.rs:468 src/ui/window.rs:568 src/ui/window.rs:573
 msgid "Tools"
 msgstr "Nástroje"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:425
+#: src/ui/window.rs:471
 msgid "Apply effects to the selected recording"
 msgstr "Použiť efekty na vybranú nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:431
+#: src/ui/window.rs:477
 msgid "Restore"
 msgstr "Obnoviť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:435
+#: src/ui/window.rs:481
 msgid "Restore the original recording"
 msgstr "Obnoviť pôvodnú nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:436
+#: src/ui/window.rs:482
 msgid "Undo"
 msgstr "Vrátiť späť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:455
+#: src/ui/window.rs:501
 msgid "Trim"
 msgstr "Orezať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:456
+#: src/ui/window.rs:502
 msgid "Remove part of the audio"
 msgstr "Odstrániť časť zvuku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:461
+#: src/ui/window.rs:507
 msgid "Volume"
 msgstr "Hlasitosť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:462
+#: src/ui/window.rs:508
 msgid "Adjust the loudness"
 msgstr "Upraviť hlasitosť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:467
+#: src/ui/window.rs:513
 msgid "Speed"
 msgstr "Rýchlosť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:468
+#: src/ui/window.rs:514
 msgid "Speed up or slow down"
 msgstr "Zrýchliť alebo spomaliť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:473
+#: src/ui/window.rs:519
 msgid "Pitch"
 msgstr "Výška tónu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:474
+#: src/ui/window.rs:520
 msgid "Change the pitch"
 msgstr "Zmeniť výšku tónu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:479
+#: src/ui/window.rs:525
 msgid "Effects"
 msgstr "Efekty"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:480
+#: src/ui/window.rs:526
 msgid "Apply a voice effect"
 msgstr "Použiť hlasový efekt"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:485
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1932
+#: src/ui/window.rs:531 src/ui/window.rs:2422
 msgid "Equalizer"
 msgstr "Ekvalizér"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:486
+#: src/ui/window.rs:532
 msgid "Tune frequency bands"
 msgstr "Naladiť frekvenčné pásma"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:491
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1966
+#: src/ui/window.rs:537 src/ui/window.rs:2456
 msgid "Reverse"
 msgstr "Obrátiť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:492
+#: src/ui/window.rs:538
 msgid "Play the audio backwards"
 msgstr "Prehrať zvuk pozpátku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:497
+#: src/ui/window.rs:543
 msgid "Merge"
 msgstr "Zlúčiť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:498
+#: src/ui/window.rs:544
 msgid "Join with another recording"
 msgstr "Spojiť s inou nahrávkou"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:503
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1362
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2091
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2118
+#: src/ui/window.rs:549 src/ui/window.rs:1782 src/ui/window.rs:2584
+#: src/ui/window.rs:2618
 msgid "Export"
 msgstr "Exportovať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:504
+#: src/ui/window.rs:550
 msgid "Save in another format"
 msgstr "Uložiť v inom formáte"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:566
+#: src/ui/window.rs:618 src/ui/window.rs:927
 msgid "Choose input device"
 msgstr "Vybrať vstupné zariadenie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:571
+#: src/ui/window.rs:633 src/ui/window.rs:935
 msgid "Ready to record"
 msgstr "Pripravené na nahrávanie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:574
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:603
+#: src/ui/window.rs:636 src/ui/window.rs:818 src/ui/window.rs:917
 msgid "Default microphone"
 msgstr "Predvolený mikrofón"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:791
+#: src/ui/window.rs:807
+msgid "No input devices found"
+msgstr "Nenašli sa žiadne vstupné zariadenia"
+
+#: src/ui/window.rs:945 src/ui/window.rs:949 src/ui/window.rs:1268
+msgid "No microphone available"
+msgstr "Nie je k dispozícii žiadny mikrofón"
+
+#: src/ui/window.rs:952 src/ui/window.rs:1269 src/ui/window.rs:1277
+msgid "Connect or enable an input device"
+msgstr "Pripojte alebo povoľte vstupné zariadenie"
+
+#: src/ui/window.rs:961 src/ui/window.rs:966 src/ui/window.rs:1265
+msgid "Unmute the microphone to record"
+msgstr "Na nahrávanie zrušte stlmenie mikrofónu"
+
+#: src/ui/window.rs:963 src/ui/window.rs:1264
+msgid "Microphone muted"
+msgstr "Mikrofón je stlmený"
+
+#: src/ui/window.rs:977 src/ui/window.rs:984 src/ui/window.rs:1273
+msgid "Choose another input device"
+msgstr "Vyberte iné vstupné zariadenie"
+
+#: src/ui/window.rs:981 src/ui/window.rs:1272 src/ui/window.rs:1276
+msgid "Microphone unavailable"
+msgstr "Mikrofón nie je dostupný"
+
+#: src/ui/window.rs:1014
 msgid "Recording in"
 msgstr "Nahráva sa v"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:815
+#: src/ui/window.rs:1038
 msgid "Open recordings folder"
 msgstr "Otvoriť priečinok s nahrávkami"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:845
+#: src/ui/window.rs:1068
 msgid "Could not open recordings folder"
 msgstr "Nie je možné otvoriť priečinok s nahrávkami"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:886
+#: src/ui/window.rs:1113
 msgid "Local voice recorder built with Rust, GTK4, libadwaita, and GStreamer."
 msgstr ""
 "Lokálny hlasový záznamník vytvorený pomocou Rust, GTK4, libadwaita a "
 "GStreamer."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:986
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1516
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2368
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2387
+#: src/ui/window.rs:1194
+msgid "Recording stopped unexpectedly"
+msgstr "Nahrávanie sa neočakávane zastavilo"
+
+#: src/ui/window.rs:1286 src/ui/window.rs:1973 src/ui/window.rs:2907
 msgid "Could not stop playback"
 msgstr "Nepodarilo sa zastaviť prehrávanie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:996
+#: src/ui/window.rs:1297
 msgid "Could not start recording"
 msgstr "Nepodarilo sa spustiť nahrávanie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1017
+#: src/ui/window.rs:1318
 msgid "Could not pause"
 msgstr "Nepodarilo sa pozastaviť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1024
+#: src/ui/window.rs:1325
 msgid "Could not resume"
 msgstr "Nepodarilo sa obnoviť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1054
+#: src/ui/window.rs:1338
 msgid "Could not finish recording"
 msgstr "Nepodarilo sa dokončiť nahrávanie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1089
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2873
+#: src/ui/window.rs:1458 src/ui/window.rs:3457
 msgid "Recording"
 msgstr "Nahrávanie"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1098
+#: src/ui/window.rs:1467
 msgid "Paused"
 msgstr "Pozastavené"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1101
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1102
+#: src/ui/window.rs:1470 src/ui/window.rs:1471
 msgid "Resume"
 msgstr "Pokračovať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1148
-msgid "1 recording"
-msgstr "1 nahrávka"
+#: src/ui/window.rs:1506
+msgid "{count} recording"
+msgid_plural "{count} recordings"
+msgstr[0] "{count} nahrávka"
+msgstr[1] "{count} nahrávky"
+msgstr[2] "{count} nahrávok"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1151
-#, rust-format
-msgid "{count} recordings"
-msgstr "{count} nahrávok"
-
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1230
+#: src/ui/window.rs:1601
 msgid "Play"
 msgstr "Prehrať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1240
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1367
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1500
+#: src/ui/window.rs:1611 src/ui/window.rs:1787 src/ui/window.rs:1957
 msgid "Move to Trash"
 msgstr "Presunúť do koša"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1313
+#: src/ui/window.rs:1695 src/ui/window.rs:1725
 msgid "Could not play recording"
 msgstr "Nahrávku nie je možné prehrať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1344
+#: src/ui/window.rs:1764
 msgid "More options"
 msgstr "Ďalšie možnosti"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1438
+#: src/ui/window.rs:1777 src/ui/window.rs:1859
 msgid "Rename"
 msgstr "Premenovať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1425
+#: src/ui/window.rs:1846
 msgid "Rename recording"
 msgstr "Premenovať nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1437
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1499
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1965
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2090
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2119
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2434
+#: src/ui/window.rs:1858 src/ui/window.rs:1956 src/ui/window.rs:2455
+#: src/ui/window.rs:2583 src/ui/window.rs:2962
 msgid "Cancel"
 msgstr "Zrušiť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1471
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1484
+#: src/ui/window.rs:1882 src/ui/window.rs:1900 src/ui/window.rs:1941
 msgid "Could not rename recording"
 msgstr "Nie je možné premenovať nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1472
+#: src/ui/window.rs:1883
+msgid "The name cannot contain “/”."
+msgstr "Názov nesmie obsahovať „/“."
+
+#: src/ui/window.rs:1901
 msgid "A recording with that name already exists."
 msgstr "Nahrávka s týmto názvom už existuje."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1493
+#: src/ui/window.rs:1950
 msgid "Move recording to trash?"
 msgstr "Presunúť nahrávku do koša?"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1495
-#, rust-format
+#: src/ui/window.rs:1952
 msgid "{recording} will be moved to the system trash."
 msgstr "{recording} bude presunutá do systémového koša."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1525
+#: src/ui/window.rs:1991
 msgid "Could not move recording to trash"
 msgstr "Nahrávku sa nepodarilo presunúť do koša"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1628
+#: src/ui/window.rs:2089
 msgid "Select a recording first"
 msgstr "Najprv vyberte nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1629
+#: src/ui/window.rs:2090
 msgid "Click a recording in the list before using a tool."
 msgstr "Pred použitím nástroja kliknite na nahrávku v zozname."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1645
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1651
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1725
+#: src/ui/window.rs:2106 src/ui/window.rs:2112 src/ui/window.rs:2186
 msgid "Could not trim recording"
 msgstr "Nahrávku nie je možné orezať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1646
+#: src/ui/window.rs:2107
 msgid "This recording has no audio data."
 msgstr "Táto nahrávka neobsahuje žiadne zvukové údaje."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1669
+#: src/ui/window.rs:2130
 msgid "Selected duration"
 msgstr "Vybraná dĺžka"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1677
+#: src/ui/window.rs:2138
 msgid "Initial seconds"
 msgstr "Počiatočné sekundy"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1678
+#: src/ui/window.rs:2139
 msgid "Remove from the start of the recording"
 msgstr "Odstrániť zo začiatku nahrávky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1682
+#: src/ui/window.rs:2143
 msgid "Final seconds"
 msgstr "Záverečné sekundy"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1683
+#: src/ui/window.rs:2144
 msgid "Remove from the end of the recording"
 msgstr "Odstrániť z konca nahrávky"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1708
+#: src/ui/window.rs:2169
 msgid "Trim recording"
 msgstr "Orezať nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1779
+#: src/ui/window.rs:2266
 msgid "Volume percent"
 msgstr "Percento hlasitosti"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1782
+#: src/ui/window.rs:2269
 msgid "Change volume"
 msgstr "Zmeniť hlasitosť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1798
+#: src/ui/window.rs:2285
 msgid "Could not change volume"
 msgstr "Hlasitosť nie je možné zmeniť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1812
+#: src/ui/window.rs:2299
 msgid "Speed factor"
 msgstr "Faktor rýchlosti"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1815
+#: src/ui/window.rs:2302
 msgid "Change speed"
 msgstr "Zmeniť rýchlosť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1831
+#: src/ui/window.rs:2318
 msgid "Could not change speed"
 msgstr "Rýchlosť sa nepodarilo zmeniť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1846
+#: src/ui/window.rs:2333
 msgid "Semitones"
 msgstr "Pôltóny"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1849
+#: src/ui/window.rs:2336
 msgid "Change pitch"
 msgstr "Zmeniť výšku tónu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1865
+#: src/ui/window.rs:2352
 msgid "Could not change pitch"
 msgstr "Výšku tónu sa nepodarilo zmeniť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1878
+#: src/ui/window.rs:2366
 msgid "Child voice"
 msgstr "Detský hlas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1879
+#: src/ui/window.rs:2367
 msgid "Deep voice"
 msgstr "Hlboký hlas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1880
+#: src/ui/window.rs:2368
 msgid "Robot voice"
 msgstr "Robotický hlas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1881
+#: src/ui/window.rs:2369
 msgid "Radio voice"
 msgstr "Rádiový hlas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1882
+#: src/ui/window.rs:2370
 msgid "Echo voice"
 msgstr "Ozvenový hlas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1892
+#: src/ui/window.rs:2382
 msgid "Effect"
 msgstr "Efekt"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1893
+#: src/ui/window.rs:2383
 msgid "Intensity"
 msgstr "Intenzita"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1897
+#: src/ui/window.rs:2387
 msgid "Voice effects"
 msgstr "Hlasové efekty"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1914
+#: src/ui/window.rs:2404
 msgid "Could not apply voice effect"
 msgstr "Hlasový efekt sa nepodarilo aplikovať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1948
+#: src/ui/window.rs:2438
 msgid "Could not equalize recording"
 msgstr "Nahrávku sa nepodarilo vyrovnať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1960
+#: src/ui/window.rs:2450
 msgid "Reverse recording"
 msgstr "Obrátený záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1961
+#: src/ui/window.rs:2451
 msgid "Create a new recording with the audio reversed."
 msgstr "Vytvorte nový záznam s obráteným zvukom."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1982
+#: src/ui/window.rs:2471
 msgid "Could not reverse recording"
 msgstr "Nepodarilo sa obrátiť záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2002
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2038
+#: src/ui/window.rs:2492 src/ui/window.rs:2525
 msgid "Could not merge recordings"
 msgstr "Nepodarilo sa zlúčiť záznamy"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2003
+#: src/ui/window.rs:2493
 msgid "There is no second recording to merge."
 msgstr "Neexistuje druhý záznam na zlúčenie."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2015
+#: src/ui/window.rs:2505
 msgid "Append recording"
 msgstr "Pripojiť záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2018
+#: src/ui/window.rs:2508
 msgid "Merge recordings"
 msgstr "Zlúčiť záznamy"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2050
+#: src/ui/window.rs:2543
 msgid "MP3 audio (.mp3)"
 msgstr "MP3 audio (.mp3)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2051
+#: src/ui/window.rs:2544
 msgid "WAV audio (.wav)"
 msgstr "WAV audio (.wav)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2052
+#: src/ui/window.rs:2545
 msgid "Opus audio (.opus)"
 msgstr "Opus audio (.opus)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2053
+#: src/ui/window.rs:2546
 msgid "FLAC audio (.flac)"
 msgstr "FLAC audio (.flac)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2057
+#: src/ui/window.rs:2551
 msgid "Low"
 msgstr "Nízka"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2058
+#: src/ui/window.rs:2551
 msgid "Medium"
 msgstr "Stredná"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2059
+#: src/ui/window.rs:2551
 msgid "High"
 msgstr "Vysoká"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2063
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2069
+#: src/ui/window.rs:2554 src/ui/window.rs:2560
 msgid "Original"
 msgstr "Pôvodný"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2064
+#: src/ui/window.rs:2554
 msgid "Mono"
 msgstr "Mono"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2065
+#: src/ui/window.rs:2554
 msgid "Stereo"
 msgstr "Stereo"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2070
+#: src/ui/window.rs:2561
 msgid "48 kHz"
 msgstr "48 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2071
+#: src/ui/window.rs:2562
 msgid "44.1 kHz"
 msgstr "44,1 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2072
+#: src/ui/window.rs:2563
 msgid "24 kHz"
 msgstr "24 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2073
+#: src/ui/window.rs:2564
 msgid "16 kHz"
 msgstr "16 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2079
+#: src/ui/window.rs:2572
 msgid "Format"
 msgstr "Formát"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2080
+#: src/ui/window.rs:2573
 msgid "Quality"
 msgstr "Kvalita"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2081
+#: src/ui/window.rs:2574
 msgid "Channels"
 msgstr "Kanály"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2082
+#: src/ui/window.rs:2575
 msgid "Sample rate"
 msgstr "Vzorkovacia frekvencia"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2086
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2115
+#: src/ui/window.rs:2579 src/ui/window.rs:2617
 msgid "Export recording"
 msgstr "Exportovať nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2135
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2147
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2421
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2424
+#: src/ui/window.rs:2642 src/ui/window.rs:2651 src/ui/window.rs:2949
+#: src/ui/window.rs:2952
 msgid "Could not export recording"
 msgstr "Nahrávku sa nepodarilo exportovať"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2136
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2148
+#: src/ui/window.rs:2652
 msgid "The selected destination is not a local file."
 msgstr "Vybrané miesto nie je lokálny súbor."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2209
+#: src/ui/window.rs:2715
 msgid "WAV audio"
 msgstr "WAV audio"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2210
+#: src/ui/window.rs:2716
 msgid "MP3 audio"
 msgstr "MP3 audio"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2211
+#: src/ui/window.rs:2717
 msgid "Opus audio"
 msgstr "Opus audio"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2212
+#: src/ui/window.rs:2718
 msgid "FLAC audio"
 msgstr "FLAC audio"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2234
+#: src/ui/window.rs:2741
 msgid "Flat"
 msgstr "Plochý"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2235
+#: src/ui/window.rs:2742
 msgid "Voice clarity"
 msgstr "Čistota hlasu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2236
+#: src/ui/window.rs:2743
 msgid "Warm"
 msgstr "Teplý"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2237
+#: src/ui/window.rs:2744
 msgid "Bright"
 msgstr "Jasný"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2238
+#: src/ui/window.rs:2745
 msgid "Bass cut"
 msgstr "Orezanie basov"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2240
+#: src/ui/window.rs:2749
 msgid "Preset"
 msgstr "Predvoľba"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2400
+#: src/ui/window.rs:2890
+msgid "Please wait"
+msgstr "Čakajte, prosím"
+
+#: src/ui/window.rs:2891
+msgid "Another operation is still running."
+msgstr "Iná operácia stále prebieha."
+
+#: src/ui/window.rs:2922
 msgid "The audio task stopped unexpectedly."
 msgstr "Zvuková úloha sa neočakávane zastavila."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2418
+#: src/ui/window.rs:2946
 msgid "Recording exported"
 msgstr "Nahrávka exportovaná"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2419
+#: src/ui/window.rs:2947
 msgid "The file was exported successfully."
 msgstr "Súbor bol úspešne exportovaný."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2425
+#: src/ui/window.rs:2953
 msgid "The export task stopped unexpectedly."
 msgstr "Exportná úloha sa neočakávane zastavila."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2435
+#: src/ui/window.rs:2963
 msgid "Apply"
 msgstr "Použiť"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2833
+#: src/ui/window.rs:3417
 msgid "Trim the selected recording"
 msgstr "Orezať vybranú nahrávku"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2834
+#: src/ui/window.rs:3418
 msgid "Change the selected recording volume"
 msgstr "Zmeniť hlasitosť vybraného záznamu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2835
+#: src/ui/window.rs:3419
 msgid "Change the selected recording speed"
 msgstr "Zmeniť rýchlosť vybraného záznamu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2836
+#: src/ui/window.rs:3420
 msgid "Change the selected recording pitch"
 msgstr "Zmeniť výšku tónu vybraného záznamu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2837
+#: src/ui/window.rs:3421
 msgid "Apply a voice effect to the selected recording"
 msgstr "Použiť hlasový efekt na vybraný záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2838
+#: src/ui/window.rs:3422
 msgid "Adjust the selected recording frequency bands"
 msgstr "Upraviť frekvenčné pásma vybraného záznamu"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2839
+#: src/ui/window.rs:3423
 msgid "Reverse the selected recording"
 msgstr "Obrátiť vybraný záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2840
+#: src/ui/window.rs:3424
 msgid "Merge the selected recording with another recording"
 msgstr "Zlúčiť vybraný záznam s iným záznamom"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2841
+#: src/ui/window.rs:3425
 msgid "Export the selected recording"
 msgstr "Exportovať vybraný záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2877
+#: src/ui/window.rs:3461
 msgid "Saved recording"
 msgstr "Uložený záznam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:3094
+#: src/ui/window.rs:3636
 msgid "OK"
 msgstr "OK"
-
-#~ msgid "Recordings are saved in Music/BigRecorder"
-#~ msgstr "Nahrávky sú uložené v Music/BigRecorder"
-
-#, rust-format
-#~ msgid "Recording to {path}"
-#~ msgstr "Nahrávanie do {path}"
-
-#, rust-format
-#~ msgid "Saved to {path}"
-#~ msgstr "Uložené do {path}"
-
-#~ msgid "Start seconds"
-#~ msgstr "Počiatočné sekundy"
-
-#~ msgid "End seconds"
-#~ msgstr "Koncové sekundy"
-
-#, rust-format
-#~ msgid "Duration {duration}"
-#~ msgstr "Trvanie {duration}"

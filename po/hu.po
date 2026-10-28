@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bigrecorder 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 17:18-0300\n"
+"POT-Creation-Date: 2026-10-27 21:03-0300\n"
 "PO-Revision-Date: 2026-05-27 20:47\n"
 "Last-Translator: BigLinux Team\n"
 "Language-Team: Hungarian <hu@li.org>\n"
@@ -11,659 +11,646 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/i18n.rs:241
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:554
+#: src/i18n.rs:268 src/ui/window.rs:602
 msgid "Record"
 msgstr "Rögzítés"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:174
+#: src/ui/window.rs:215
 msgid "Local voice recorder"
 msgstr "Helyi hangrögzítő"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:179
+#: src/ui/window.rs:220
 msgid "Menu"
 msgstr "Menü"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:182
+#: src/ui/window.rs:223
 msgid "About"
 msgstr "Névjegy"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:183
+#: src/ui/window.rs:224
 msgid "Close"
 msgstr "Bezárás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:226
+#: src/ui/window.rs:267
 msgid "Recordings"
 msgstr "Felvételek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:238
+#: src/ui/window.rs:279
 msgid "Search recordings"
 msgstr "Felvételek keresése"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:245
+#: src/ui/window.rs:286
 msgid "List view"
 msgstr "Lista nézet"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:253
+#: src/ui/window.rs:294
 msgid "Grid view"
 msgstr "Rács nézet"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:281
+#: src/ui/window.rs:327
 msgid "No recordings yet"
 msgstr "Még nincsenek felvételek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:310
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1084
+#: src/ui/window.rs:356 src/ui/window.rs:1453
 msgid "Ready"
 msgstr "Kész"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:322
+#: src/ui/window.rs:368
 msgid "Recording time"
 msgstr "Felvétel időtartama"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:347
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1092
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1093
+#: src/ui/window.rs:393 src/ui/window.rs:403 src/ui/window.rs:1461
+#: src/ui/window.rs:1462
 msgid "Pause"
 msgstr "Szünet"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:365
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:375
+#: src/ui/window.rs:411 src/ui/window.rs:421
 msgid "Stop"
 msgstr "Leállítás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:422
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:520
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:525
+#: src/ui/window.rs:468 src/ui/window.rs:568 src/ui/window.rs:573
 msgid "Tools"
 msgstr "Eszközök"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:425
+#: src/ui/window.rs:471
 msgid "Apply effects to the selected recording"
 msgstr "Effektek alkalmazása a kiválasztott felvételre"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:431
+#: src/ui/window.rs:477
 msgid "Restore"
 msgstr "Visszaállítás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:435
+#: src/ui/window.rs:481
 msgid "Restore the original recording"
 msgstr "Az eredeti felvétel visszaállítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:436
+#: src/ui/window.rs:482
 msgid "Undo"
 msgstr "Visszavonás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:455
+#: src/ui/window.rs:501
 msgid "Trim"
 msgstr "Vágás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:456
+#: src/ui/window.rs:502
 msgid "Remove part of the audio"
 msgstr "Hangelem eltávolítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:461
+#: src/ui/window.rs:507
 msgid "Volume"
 msgstr "Hangerő"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:462
+#: src/ui/window.rs:508
 msgid "Adjust the loudness"
 msgstr "Hangerő beállítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:467
+#: src/ui/window.rs:513
 msgid "Speed"
 msgstr "Sebesség"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:468
+#: src/ui/window.rs:514
 msgid "Speed up or slow down"
 msgstr "Gyorsítás vagy lassítás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:473
+#: src/ui/window.rs:519
 msgid "Pitch"
 msgstr "Hangmagasság"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:474
+#: src/ui/window.rs:520
 msgid "Change the pitch"
 msgstr "Hangmagasság módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:479
+#: src/ui/window.rs:525
 msgid "Effects"
 msgstr "Effektek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:480
+#: src/ui/window.rs:526
 msgid "Apply a voice effect"
 msgstr "Hangeffektus alkalmazása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:485
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1932
+#: src/ui/window.rs:531 src/ui/window.rs:2422
 msgid "Equalizer"
 msgstr "Hangszínszabályzó"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:486
+#: src/ui/window.rs:532
 msgid "Tune frequency bands"
 msgstr "Frekvenciasávok hangolása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:491
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1966
+#: src/ui/window.rs:537 src/ui/window.rs:2456
 msgid "Reverse"
 msgstr "Megfordítás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:492
+#: src/ui/window.rs:538
 msgid "Play the audio backwards"
 msgstr "A hang visszafelé lejátszása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:497
+#: src/ui/window.rs:543
 msgid "Merge"
 msgstr "Egyesítés"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:498
+#: src/ui/window.rs:544
 msgid "Join with another recording"
 msgstr "Csatlakoztatás másik felvételhez"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:503
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1362
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2091
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2118
+#: src/ui/window.rs:549 src/ui/window.rs:1782 src/ui/window.rs:2584
+#: src/ui/window.rs:2618
 msgid "Export"
 msgstr "Exportálás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:504
+#: src/ui/window.rs:550
 msgid "Save in another format"
 msgstr "Mentés más formátumban"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:566
+#: src/ui/window.rs:618 src/ui/window.rs:927
 msgid "Choose input device"
 msgstr "Bemeneti eszköz kiválasztása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:571
+#: src/ui/window.rs:633 src/ui/window.rs:935
 msgid "Ready to record"
 msgstr "Készen áll a felvételre"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:574
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:603
+#: src/ui/window.rs:636 src/ui/window.rs:818 src/ui/window.rs:917
 msgid "Default microphone"
 msgstr "Alapértelmezett mikrofon"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:791
+#: src/ui/window.rs:807
+msgid "No input devices found"
+msgstr "Nem található bemeneti eszköz"
+
+#: src/ui/window.rs:945 src/ui/window.rs:949 src/ui/window.rs:1268
+msgid "No microphone available"
+msgstr "Nincs elérhető mikrofon"
+
+#: src/ui/window.rs:952 src/ui/window.rs:1269 src/ui/window.rs:1277
+msgid "Connect or enable an input device"
+msgstr "Csatlakoztasson vagy engedélyezzen egy bemeneti eszközt"
+
+#: src/ui/window.rs:961 src/ui/window.rs:966 src/ui/window.rs:1265
+msgid "Unmute the microphone to record"
+msgstr "A felvételhez kapcsolja be a mikrofont"
+
+#: src/ui/window.rs:963 src/ui/window.rs:1264
+msgid "Microphone muted"
+msgstr "Mikrofon némítva"
+
+#: src/ui/window.rs:977 src/ui/window.rs:984 src/ui/window.rs:1273
+msgid "Choose another input device"
+msgstr "Válasszon másik bemeneti eszközt"
+
+#: src/ui/window.rs:981 src/ui/window.rs:1272 src/ui/window.rs:1276
+msgid "Microphone unavailable"
+msgstr "A mikrofon nem érhető el"
+
+#: src/ui/window.rs:1014
 msgid "Recording in"
 msgstr "Felvétel ebben:"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:815
+#: src/ui/window.rs:1038
 msgid "Open recordings folder"
 msgstr "Felvételek mappa megnyitása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:845
+#: src/ui/window.rs:1068
 msgid "Could not open recordings folder"
 msgstr "Nem sikerült megnyitni a felvételek mappát"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:886
+#: src/ui/window.rs:1113
 msgid "Local voice recorder built with Rust, GTK4, libadwaita, and GStreamer."
 msgstr "Helyi hangrögzítő, Rust, GTK4, libadwaita és GStreamer alapokon."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:986
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1516
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2368
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2387
+#: src/ui/window.rs:1194
+msgid "Recording stopped unexpectedly"
+msgstr "A felvétel váratlanul leállt"
+
+#: src/ui/window.rs:1286 src/ui/window.rs:1973 src/ui/window.rs:2907
 msgid "Could not stop playback"
 msgstr "A lejátszás leállítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:996
+#: src/ui/window.rs:1297
 msgid "Could not start recording"
 msgstr "A felvétel indítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1017
+#: src/ui/window.rs:1318
 msgid "Could not pause"
 msgstr "A szüneteltetés nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1024
+#: src/ui/window.rs:1325
 msgid "Could not resume"
 msgstr "A folytatás nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1054
+#: src/ui/window.rs:1338
 msgid "Could not finish recording"
 msgstr "A felvétel befejezése nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1089
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2873
+#: src/ui/window.rs:1458 src/ui/window.rs:3457
 msgid "Recording"
 msgstr "Felvétel"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1098
+#: src/ui/window.rs:1467
 msgid "Paused"
 msgstr "Szüneteltetve"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1101
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1102
+#: src/ui/window.rs:1470 src/ui/window.rs:1471
 msgid "Resume"
 msgstr "Folytatás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1148
-msgid "1 recording"
-msgstr "1 felvétel"
+#: src/ui/window.rs:1506
+msgid "{count} recording"
+msgid_plural "{count} recordings"
+msgstr[0] "{count} felvétel"
+msgstr[1] "{count} felvétel"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1151
-#, rust-format
-msgid "{count} recordings"
-msgstr "{count} felvétel"
-
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1230
+#: src/ui/window.rs:1601
 msgid "Play"
 msgstr "Lejátszás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1240
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1367
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1500
+#: src/ui/window.rs:1611 src/ui/window.rs:1787 src/ui/window.rs:1957
 msgid "Move to Trash"
 msgstr "Áthelyezés a kukába"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1313
+#: src/ui/window.rs:1695 src/ui/window.rs:1725
 msgid "Could not play recording"
 msgstr "A felvétel nem játszható le"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1344
+#: src/ui/window.rs:1764
 msgid "More options"
 msgstr "További lehetőségek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1438
+#: src/ui/window.rs:1777 src/ui/window.rs:1859
 msgid "Rename"
 msgstr "Átnevezés"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1425
+#: src/ui/window.rs:1846
 msgid "Rename recording"
 msgstr "Felvétel átnevezése"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1437
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1499
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1965
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2090
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2119
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2434
+#: src/ui/window.rs:1858 src/ui/window.rs:1956 src/ui/window.rs:2455
+#: src/ui/window.rs:2583 src/ui/window.rs:2962
 msgid "Cancel"
 msgstr "Mégse"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1471
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1484
+#: src/ui/window.rs:1882 src/ui/window.rs:1900 src/ui/window.rs:1941
 msgid "Could not rename recording"
 msgstr "Nem sikerült átnevezni a felvételt"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1472
+#: src/ui/window.rs:1883
+msgid "The name cannot contain “/”."
+msgstr "A név nem tartalmazhat „/” karaktert."
+
+#: src/ui/window.rs:1901
 msgid "A recording with that name already exists."
 msgstr "Már létezik ilyen nevű felvétel."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1493
+#: src/ui/window.rs:1950
 msgid "Move recording to trash?"
 msgstr "Áthelyezi a felvételt a kukába?"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1495
-#, rust-format
+#: src/ui/window.rs:1952
 msgid "{recording} will be moved to the system trash."
 msgstr "A(z) {recording} a rendszer kukájába kerül."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1525
+#: src/ui/window.rs:1991
 msgid "Could not move recording to trash"
 msgstr "Nem sikerült áthelyezni a felvételt a kukába"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1628
+#: src/ui/window.rs:2089
 msgid "Select a recording first"
 msgstr "Először válasszon ki egy felvételt"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1629
+#: src/ui/window.rs:2090
 msgid "Click a recording in the list before using a tool."
 msgstr "Kattintson egy felvételre a listában, mielőtt eszközt használ."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1645
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1651
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1725
+#: src/ui/window.rs:2106 src/ui/window.rs:2112 src/ui/window.rs:2186
 msgid "Could not trim recording"
 msgstr "A felvétel vágása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1646
+#: src/ui/window.rs:2107
 msgid "This recording has no audio data."
 msgstr "Ennek a felvételnek nincs hangadata."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1669
+#: src/ui/window.rs:2130
 msgid "Selected duration"
 msgstr "Kiválasztott időtartam"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1677
+#: src/ui/window.rs:2138
 msgid "Initial seconds"
 msgstr "Kezdeti másodpercek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1678
+#: src/ui/window.rs:2139
 msgid "Remove from the start of the recording"
 msgstr "Eltávolítás a felvétel elejéről"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1682
+#: src/ui/window.rs:2143
 msgid "Final seconds"
 msgstr "Végső másodpercek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1683
+#: src/ui/window.rs:2144
 msgid "Remove from the end of the recording"
 msgstr "Eltávolítás a felvétel végéről"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1708
+#: src/ui/window.rs:2169
 msgid "Trim recording"
 msgstr "Felvétel vágása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1779
+#: src/ui/window.rs:2266
 msgid "Volume percent"
 msgstr "Hangerő százalék"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1782
+#: src/ui/window.rs:2269
 msgid "Change volume"
 msgstr "Hangerő módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1798
+#: src/ui/window.rs:2285
 msgid "Could not change volume"
 msgstr "A hangerő módosítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1812
+#: src/ui/window.rs:2299
 msgid "Speed factor"
 msgstr "Sebesség tényező"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1815
+#: src/ui/window.rs:2302
 msgid "Change speed"
 msgstr "Sebesség módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1831
+#: src/ui/window.rs:2318
 msgid "Could not change speed"
 msgstr "A sebesség módosítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1846
+#: src/ui/window.rs:2333
 msgid "Semitones"
 msgstr "Félhangok"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1849
+#: src/ui/window.rs:2336
 msgid "Change pitch"
 msgstr "Hangmagasság módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1865
+#: src/ui/window.rs:2352
 msgid "Could not change pitch"
 msgstr "A hangmagasság módosítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1878
+#: src/ui/window.rs:2366
 msgid "Child voice"
 msgstr "Gyerekhang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1879
+#: src/ui/window.rs:2367
 msgid "Deep voice"
 msgstr "Mély hang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1880
+#: src/ui/window.rs:2368
 msgid "Robot voice"
 msgstr "Robot hang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1881
+#: src/ui/window.rs:2369
 msgid "Radio voice"
 msgstr "Rádió hang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1882
+#: src/ui/window.rs:2370
 msgid "Echo voice"
 msgstr "Visszhang hang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1892
+#: src/ui/window.rs:2382
 msgid "Effect"
 msgstr "Effekt"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1893
+#: src/ui/window.rs:2383
 msgid "Intensity"
 msgstr "Intenzitás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1897
+#: src/ui/window.rs:2387
 msgid "Voice effects"
 msgstr "Hangeffektek"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1914
+#: src/ui/window.rs:2404
 msgid "Could not apply voice effect"
 msgstr "A hangeffekt alkalmazása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1948
+#: src/ui/window.rs:2438
 msgid "Could not equalize recording"
 msgstr "A felvétel kiegyenlítése nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1960
+#: src/ui/window.rs:2450
 msgid "Reverse recording"
 msgstr "Felvétel megfordítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1961
+#: src/ui/window.rs:2451
 msgid "Create a new recording with the audio reversed."
 msgstr "Hozzon létre egy új felvételt a hang megfordításával."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1982
+#: src/ui/window.rs:2471
 msgid "Could not reverse recording"
 msgstr "A felvétel megfordítása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2002
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2038
+#: src/ui/window.rs:2492 src/ui/window.rs:2525
 msgid "Could not merge recordings"
 msgstr "A felvételek egyesítése nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2003
+#: src/ui/window.rs:2493
 msgid "There is no second recording to merge."
 msgstr "Nincs második felvétel az egyesítéshez."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2015
+#: src/ui/window.rs:2505
 msgid "Append recording"
 msgstr "Felvétel hozzáfűzése"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2018
+#: src/ui/window.rs:2508
 msgid "Merge recordings"
 msgstr "Felvételek egyesítése"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2050
+#: src/ui/window.rs:2543
 msgid "MP3 audio (.mp3)"
 msgstr "MP3 hangfájl (.mp3)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2051
+#: src/ui/window.rs:2544
 msgid "WAV audio (.wav)"
 msgstr "WAV hangfájl (.wav)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2052
+#: src/ui/window.rs:2545
 msgid "Opus audio (.opus)"
 msgstr "Opus hangfájl (.opus)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2053
+#: src/ui/window.rs:2546
 msgid "FLAC audio (.flac)"
 msgstr "FLAC hangfájl (.flac)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2057
+#: src/ui/window.rs:2551
 msgid "Low"
 msgstr "Alacsony"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2058
+#: src/ui/window.rs:2551
 msgid "Medium"
 msgstr "Közepes"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2059
+#: src/ui/window.rs:2551
 msgid "High"
 msgstr "Magas"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2063
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2069
+#: src/ui/window.rs:2554 src/ui/window.rs:2560
 msgid "Original"
 msgstr "Eredeti"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2064
+#: src/ui/window.rs:2554
 msgid "Mono"
 msgstr "Mono"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2065
+#: src/ui/window.rs:2554
 msgid "Stereo"
 msgstr "Sztereó"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2070
+#: src/ui/window.rs:2561
 msgid "48 kHz"
 msgstr "48 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2071
+#: src/ui/window.rs:2562
 msgid "44.1 kHz"
 msgstr "44,1 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2072
+#: src/ui/window.rs:2563
 msgid "24 kHz"
 msgstr "24 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2073
+#: src/ui/window.rs:2564
 msgid "16 kHz"
 msgstr "16 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2079
+#: src/ui/window.rs:2572
 msgid "Format"
 msgstr "Formátum"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2080
+#: src/ui/window.rs:2573
 msgid "Quality"
 msgstr "Minőség"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2081
+#: src/ui/window.rs:2574
 msgid "Channels"
 msgstr "Csatornák"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2082
+#: src/ui/window.rs:2575
 msgid "Sample rate"
 msgstr "Mintavételi frekvencia"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2086
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2115
+#: src/ui/window.rs:2579 src/ui/window.rs:2617
 msgid "Export recording"
 msgstr "Felvétel exportálása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2135
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2147
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2421
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2424
+#: src/ui/window.rs:2642 src/ui/window.rs:2651 src/ui/window.rs:2949
+#: src/ui/window.rs:2952
 msgid "Could not export recording"
 msgstr "A felvétel exportálása nem sikerült"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2136
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2148
+#: src/ui/window.rs:2652
 msgid "The selected destination is not a local file."
 msgstr "A kiválasztott cél nem egy helyi fájl."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2209
+#: src/ui/window.rs:2715
 msgid "WAV audio"
 msgstr "WAV hang"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2210
+#: src/ui/window.rs:2716
 msgid "MP3 audio"
 msgstr "MP3 hangfájl"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2211
+#: src/ui/window.rs:2717
 msgid "Opus audio"
 msgstr "Opus hangfájl"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2212
+#: src/ui/window.rs:2718
 msgid "FLAC audio"
 msgstr "FLAC hangfájl"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2234
+#: src/ui/window.rs:2741
 msgid "Flat"
 msgstr "Lapos"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2235
+#: src/ui/window.rs:2742
 msgid "Voice clarity"
 msgstr "Hangtisztaság"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2236
+#: src/ui/window.rs:2743
 msgid "Warm"
 msgstr "Meleg"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2237
+#: src/ui/window.rs:2744
 msgid "Bright"
 msgstr "Fényes"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2238
+#: src/ui/window.rs:2745
 msgid "Bass cut"
 msgstr "Mélyhangvágás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2240
+#: src/ui/window.rs:2749
 msgid "Preset"
 msgstr "Előbeállítás"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2400
+#: src/ui/window.rs:2890
+msgid "Please wait"
+msgstr "Kérjük, várjon"
+
+#: src/ui/window.rs:2891
+msgid "Another operation is still running."
+msgstr "Egy másik művelet még folyamatban van."
+
+#: src/ui/window.rs:2922
 msgid "The audio task stopped unexpectedly."
 msgstr "A hangfeladat váratlanul leállt."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2418
+#: src/ui/window.rs:2946
 msgid "Recording exported"
 msgstr "Felvétel exportálva"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2419
+#: src/ui/window.rs:2947
 msgid "The file was exported successfully."
 msgstr "A fájl sikeresen exportálva lett."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2425
+#: src/ui/window.rs:2953
 msgid "The export task stopped unexpectedly."
 msgstr "Az exportálási feladat váratlanul leállt."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2435
+#: src/ui/window.rs:2963
 msgid "Apply"
 msgstr "Alkalmaz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2833
+#: src/ui/window.rs:3417
 msgid "Trim the selected recording"
 msgstr "A kiválasztott felvétel vágása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2834
+#: src/ui/window.rs:3418
 msgid "Change the selected recording volume"
 msgstr "A kiválasztott felvétel hangerejének módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2835
+#: src/ui/window.rs:3419
 msgid "Change the selected recording speed"
 msgstr "A kiválasztott felvétel sebességének módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2836
+#: src/ui/window.rs:3420
 msgid "Change the selected recording pitch"
 msgstr "A kiválasztott felvétel hangmagasságának módosítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2837
+#: src/ui/window.rs:3421
 msgid "Apply a voice effect to the selected recording"
 msgstr "Hangeffektus alkalmazása a kiválasztott felvételre"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2838
+#: src/ui/window.rs:3422
 msgid "Adjust the selected recording frequency bands"
 msgstr "A kiválasztott felvétel frekvenciasávjainak beállítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2839
+#: src/ui/window.rs:3423
 msgid "Reverse the selected recording"
 msgstr "A kiválasztott felvétel megfordítása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2840
+#: src/ui/window.rs:3424
 msgid "Merge the selected recording with another recording"
 msgstr "A kiválasztott felvétel egyesítése egy másik felvétellel"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2841
+#: src/ui/window.rs:3425
 msgid "Export the selected recording"
 msgstr "A kiválasztott felvétel exportálása"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2877
+#: src/ui/window.rs:3461
 msgid "Saved recording"
 msgstr "Mentett felvétel"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:3094
+#: src/ui/window.rs:3636
 msgid "OK"
 msgstr "OK"
-
-#~ msgid "Recordings are saved in Music/BigRecorder"
-#~ msgstr "A felvételek a Music/BigRecorder mappába kerülnek mentésre"
-
-#, rust-format
-#~ msgid "Recording to {path}"
-#~ msgstr "Felvétel ide: {path}"
-
-#, rust-format
-#~ msgid "Saved to {path}"
-#~ msgstr "Mentve ide: {path}"
-
-#~ msgid "Start seconds"
-#~ msgstr "Kezdő másodperc"
-
-#~ msgid "End seconds"
-#~ msgstr "Vég másodperc"
-
-#, rust-format
-#~ msgid "Duration {duration}"
-#~ msgstr "Időtartam {duration}"

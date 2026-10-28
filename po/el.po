@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bigrecorder 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 17:18-0300\n"
+"POT-Creation-Date: 2026-10-27 21:03-0300\n"
 "PO-Revision-Date: 2026-05-27 20:45\n"
 "Last-Translator: BigLinux Team\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -11,661 +11,647 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/i18n.rs:241
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:554
+#: src/i18n.rs:268 src/ui/window.rs:602
 msgid "Record"
 msgstr "Ηχογράφηση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:174
+#: src/ui/window.rs:215
 msgid "Local voice recorder"
 msgstr "Τοπική εγγραφή φωνής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:179
+#: src/ui/window.rs:220
 msgid "Menu"
 msgstr "Μενού"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:182
+#: src/ui/window.rs:223
 msgid "About"
 msgstr "Σχετικά"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:183
+#: src/ui/window.rs:224
 msgid "Close"
 msgstr "Κλείσιμο"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:226
+#: src/ui/window.rs:267
 msgid "Recordings"
 msgstr "Εγγραφές"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:238
+#: src/ui/window.rs:279
 msgid "Search recordings"
 msgstr "Αναζήτηση ηχογραφήσεων"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:245
+#: src/ui/window.rs:286
 msgid "List view"
 msgstr "Προβολή λίστας"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:253
+#: src/ui/window.rs:294
 msgid "Grid view"
 msgstr "Προβολή πλέγματος"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:281
+#: src/ui/window.rs:327
 msgid "No recordings yet"
 msgstr "Δεν υπάρχουν ακόμα εγγραφές"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:310
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1084
+#: src/ui/window.rs:356 src/ui/window.rs:1453
 msgid "Ready"
 msgstr "Έτοιμο"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:322
+#: src/ui/window.rs:368
 msgid "Recording time"
 msgstr "Χρόνος ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:347
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1092
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1093
+#: src/ui/window.rs:393 src/ui/window.rs:403 src/ui/window.rs:1461
+#: src/ui/window.rs:1462
 msgid "Pause"
 msgstr "Παύση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:365
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:375
+#: src/ui/window.rs:411 src/ui/window.rs:421
 msgid "Stop"
 msgstr "Διακοπή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:422
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:520
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:525
+#: src/ui/window.rs:468 src/ui/window.rs:568 src/ui/window.rs:573
 msgid "Tools"
 msgstr "Εργαλεία"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:425
+#: src/ui/window.rs:471
 msgid "Apply effects to the selected recording"
 msgstr "Εφαρμογή εφέ στην επιλεγμένη ηχογράφηση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:431
+#: src/ui/window.rs:477
 msgid "Restore"
 msgstr "Επαναφορά"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:435
+#: src/ui/window.rs:481
 msgid "Restore the original recording"
 msgstr "Επαναφορά της αρχικής ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:436
+#: src/ui/window.rs:482
 msgid "Undo"
 msgstr "Αναίρεση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:455
+#: src/ui/window.rs:501
 msgid "Trim"
 msgstr "Περικοπή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:456
+#: src/ui/window.rs:502
 msgid "Remove part of the audio"
 msgstr "Αφαίρεση τμήματος του ήχου"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:461
+#: src/ui/window.rs:507
 msgid "Volume"
 msgstr "Ένταση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:462
+#: src/ui/window.rs:508
 msgid "Adjust the loudness"
 msgstr "Ρύθμιση της έντασης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:467
+#: src/ui/window.rs:513
 msgid "Speed"
 msgstr "Ταχύτητα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:468
+#: src/ui/window.rs:514
 msgid "Speed up or slow down"
 msgstr "Επιτάχυνση ή επιβράδυνση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:473
+#: src/ui/window.rs:519
 msgid "Pitch"
 msgstr "Τόνος"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:474
+#: src/ui/window.rs:520
 msgid "Change the pitch"
 msgstr "Αλλαγή του τόνου"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:479
+#: src/ui/window.rs:525
 msgid "Effects"
 msgstr "Εφέ"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:480
+#: src/ui/window.rs:526
 msgid "Apply a voice effect"
 msgstr "Εφαρμογή εφέ φωνής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:485
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1932
+#: src/ui/window.rs:531 src/ui/window.rs:2422
 msgid "Equalizer"
 msgstr "Ισοσταθμιστής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:486
+#: src/ui/window.rs:532
 msgid "Tune frequency bands"
 msgstr "Ρύθμιση ζωνών συχνοτήτων"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:491
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1966
+#: src/ui/window.rs:537 src/ui/window.rs:2456
 msgid "Reverse"
 msgstr "Αντιστροφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:492
+#: src/ui/window.rs:538
 msgid "Play the audio backwards"
 msgstr "Αναπαραγωγή του ήχου ανάποδα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:497
+#: src/ui/window.rs:543
 msgid "Merge"
 msgstr "Συγχώνευση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:498
+#: src/ui/window.rs:544
 msgid "Join with another recording"
 msgstr "Συγχώνευση με άλλη εγγραφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:503
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1362
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2091
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2118
+#: src/ui/window.rs:549 src/ui/window.rs:1782 src/ui/window.rs:2584
+#: src/ui/window.rs:2618
 msgid "Export"
 msgstr "Εξαγωγή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:504
+#: src/ui/window.rs:550
 msgid "Save in another format"
 msgstr "Αποθήκευση σε άλλη μορφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:566
+#: src/ui/window.rs:618 src/ui/window.rs:927
 msgid "Choose input device"
 msgstr "Επιλογή συσκευής εισόδου"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:571
+#: src/ui/window.rs:633 src/ui/window.rs:935
 msgid "Ready to record"
 msgstr "Έτοιμο για εγγραφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:574
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:603
+#: src/ui/window.rs:636 src/ui/window.rs:818 src/ui/window.rs:917
 msgid "Default microphone"
 msgstr "Προεπιλεγμένο μικρόφωνο"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:791
+#: src/ui/window.rs:807
+msgid "No input devices found"
+msgstr "Δεν βρέθηκαν συσκευές εισόδου"
+
+#: src/ui/window.rs:945 src/ui/window.rs:949 src/ui/window.rs:1268
+msgid "No microphone available"
+msgstr "Δεν υπάρχει διαθέσιμο μικρόφωνο"
+
+#: src/ui/window.rs:952 src/ui/window.rs:1269 src/ui/window.rs:1277
+msgid "Connect or enable an input device"
+msgstr "Συνδέστε ή ενεργοποιήστε μια συσκευή εισόδου"
+
+#: src/ui/window.rs:961 src/ui/window.rs:966 src/ui/window.rs:1265
+msgid "Unmute the microphone to record"
+msgstr "Καταργήστε τη σίγαση του μικροφώνου για ηχογράφηση"
+
+#: src/ui/window.rs:963 src/ui/window.rs:1264
+msgid "Microphone muted"
+msgstr "Το μικρόφωνο είναι σε σίγαση"
+
+#: src/ui/window.rs:977 src/ui/window.rs:984 src/ui/window.rs:1273
+msgid "Choose another input device"
+msgstr "Επιλέξτε άλλη συσκευή εισόδου"
+
+#: src/ui/window.rs:981 src/ui/window.rs:1272 src/ui/window.rs:1276
+msgid "Microphone unavailable"
+msgstr "Το μικρόφωνο δεν είναι διαθέσιμο"
+
+#: src/ui/window.rs:1014
 msgid "Recording in"
 msgstr "Εγγραφή σε"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:815
+#: src/ui/window.rs:1038
 msgid "Open recordings folder"
 msgstr "Άνοιγμα φακέλου εγγραφών"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:845
+#: src/ui/window.rs:1068
 msgid "Could not open recordings folder"
 msgstr "Δεν ήταν δυνατό το άνοιγμα του φακέλου εγγραφών"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:886
+#: src/ui/window.rs:1113
 msgid "Local voice recorder built with Rust, GTK4, libadwaita, and GStreamer."
 msgstr ""
 "Τοπική εγγραφή φωνής κατασκευασμένη με Rust, GTK4, libadwaita και GStreamer."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:986
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1516
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2368
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2387
+#: src/ui/window.rs:1194
+msgid "Recording stopped unexpectedly"
+msgstr "Η ηχογράφηση σταμάτησε απροσδόκητα"
+
+#: src/ui/window.rs:1286 src/ui/window.rs:1973 src/ui/window.rs:2907
 msgid "Could not stop playback"
 msgstr "Δεν ήταν δυνατή η διακοπή της αναπαραγωγής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:996
+#: src/ui/window.rs:1297
 msgid "Could not start recording"
 msgstr "Δεν ήταν δυνατή η έναρξη εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1017
+#: src/ui/window.rs:1318
 msgid "Could not pause"
 msgstr "Δεν ήταν δυνατή η παύση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1024
+#: src/ui/window.rs:1325
 msgid "Could not resume"
 msgstr "Δεν ήταν δυνατή η συνέχιση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1054
+#: src/ui/window.rs:1338
 msgid "Could not finish recording"
 msgstr "Δεν ήταν δυνατή η ολοκλήρωση της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1089
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2873
+#: src/ui/window.rs:1458 src/ui/window.rs:3457
 msgid "Recording"
 msgstr "Ηχογράφηση σε εξέλιξη"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1098
+#: src/ui/window.rs:1467
 msgid "Paused"
 msgstr "Σε παύση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1101
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1102
+#: src/ui/window.rs:1470 src/ui/window.rs:1471
 msgid "Resume"
 msgstr "Συνέχεια"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1148
-msgid "1 recording"
-msgstr "1 εγγραφή"
+#: src/ui/window.rs:1506
+msgid "{count} recording"
+msgid_plural "{count} recordings"
+msgstr[0] "{count} εγγραφή"
+msgstr[1] "{count} εγγραφές"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1151
-#, rust-format
-msgid "{count} recordings"
-msgstr "{count} εγγραφές"
-
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1230
+#: src/ui/window.rs:1601
 msgid "Play"
 msgstr "Αναπαραγωγή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1240
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1367
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1500
+#: src/ui/window.rs:1611 src/ui/window.rs:1787 src/ui/window.rs:1957
 msgid "Move to Trash"
 msgstr "Μετακίνηση στα απορρίμματα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1313
+#: src/ui/window.rs:1695 src/ui/window.rs:1725
 msgid "Could not play recording"
 msgstr "Δεν ήταν δυνατή η αναπαραγωγή της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1344
+#: src/ui/window.rs:1764
 msgid "More options"
 msgstr "Περισσότερες επιλογές"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1357
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1438
+#: src/ui/window.rs:1777 src/ui/window.rs:1859
 msgid "Rename"
 msgstr "Μετονομασία"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1425
+#: src/ui/window.rs:1846
 msgid "Rename recording"
 msgstr "Μετονομασία εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1437
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1499
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1965
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2090
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2119
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2434
+#: src/ui/window.rs:1858 src/ui/window.rs:1956 src/ui/window.rs:2455
+#: src/ui/window.rs:2583 src/ui/window.rs:2962
 msgid "Cancel"
 msgstr "Ακύρωση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1471
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1484
+#: src/ui/window.rs:1882 src/ui/window.rs:1900 src/ui/window.rs:1941
 msgid "Could not rename recording"
 msgstr "Δεν ήταν δυνατή η μετονομασία της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1472
+#: src/ui/window.rs:1883
+msgid "The name cannot contain “/”."
+msgstr "Το όνομα δεν μπορεί να περιέχει «/»."
+
+#: src/ui/window.rs:1901
 msgid "A recording with that name already exists."
 msgstr "Υπάρχει ήδη μια εγγραφή με αυτό το όνομα."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1493
+#: src/ui/window.rs:1950
 msgid "Move recording to trash?"
 msgstr "Να μετακινηθεί η ηχογράφηση στα απορρίμματα;"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1495
-#, rust-format
+#: src/ui/window.rs:1952
 msgid "{recording} will be moved to the system trash."
 msgstr "Το {recording} θα μετακινηθεί στα απορρίμματα του συστήματος."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1525
+#: src/ui/window.rs:1991
 msgid "Could not move recording to trash"
 msgstr "Δεν ήταν δυνατή η μετακίνηση της ηχογράφησης στα απορρίμματα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1628
+#: src/ui/window.rs:2089
 msgid "Select a recording first"
 msgstr "Επιλέξτε πρώτα μια εγγραφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1629
+#: src/ui/window.rs:2090
 msgid "Click a recording in the list before using a tool."
-msgstr ""
-"Κάντε κλικ σε μια εγγραφή στη λίστα πριν χρησιμοποιήσετε ένα εργαλείο."
+msgstr "Κάντε κλικ σε μια εγγραφή στη λίστα πριν χρησιμοποιήσετε ένα εργαλείο."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1645
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1651
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1725
+#: src/ui/window.rs:2106 src/ui/window.rs:2112 src/ui/window.rs:2186
 msgid "Could not trim recording"
 msgstr "Δεν ήταν δυνατή η περικοπή της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1646
+#: src/ui/window.rs:2107
 msgid "This recording has no audio data."
 msgstr "Αυτή η εγγραφή δεν περιέχει δεδομένα ήχου."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1669
+#: src/ui/window.rs:2130
 msgid "Selected duration"
 msgstr "Επιλεγμένη διάρκεια"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1677
+#: src/ui/window.rs:2138
 msgid "Initial seconds"
 msgstr "Αρχικά δευτερόλεπτα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1678
+#: src/ui/window.rs:2139
 msgid "Remove from the start of the recording"
 msgstr "Αφαίρεση από την αρχή της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1682
+#: src/ui/window.rs:2143
 msgid "Final seconds"
 msgstr "Τελικά δευτερόλεπτα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1683
+#: src/ui/window.rs:2144
 msgid "Remove from the end of the recording"
 msgstr "Αφαίρεση από το τέλος της εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1708
+#: src/ui/window.rs:2169
 msgid "Trim recording"
 msgstr "Περικοπή εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1779
+#: src/ui/window.rs:2266
 msgid "Volume percent"
 msgstr "Ποσοστό έντασης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1782
+#: src/ui/window.rs:2269
 msgid "Change volume"
 msgstr "Αλλαγή έντασης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1798
+#: src/ui/window.rs:2285
 msgid "Could not change volume"
 msgstr "Δεν ήταν δυνατή η αλλαγή έντασης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1812
+#: src/ui/window.rs:2299
 msgid "Speed factor"
 msgstr "Συντελεστής ταχύτητας"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1815
+#: src/ui/window.rs:2302
 msgid "Change speed"
 msgstr "Αλλαγή ταχύτητας"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1831
+#: src/ui/window.rs:2318
 msgid "Could not change speed"
 msgstr "Δεν ήταν δυνατή η αλλαγή ταχύτητας"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1846
+#: src/ui/window.rs:2333
 msgid "Semitones"
 msgstr "Ημιτόνια"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1849
+#: src/ui/window.rs:2336
 msgid "Change pitch"
 msgstr "Αλλαγή τόνου"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1865
+#: src/ui/window.rs:2352
 msgid "Could not change pitch"
 msgstr "Δεν ήταν δυνατή η αλλαγή τόνου"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1878
+#: src/ui/window.rs:2366
 msgid "Child voice"
 msgstr "Παιδική φωνή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1879
+#: src/ui/window.rs:2367
 msgid "Deep voice"
 msgstr "Βαθιά φωνή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1880
+#: src/ui/window.rs:2368
 msgid "Robot voice"
 msgstr "Ρομποτική φωνή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1881
+#: src/ui/window.rs:2369
 msgid "Radio voice"
 msgstr "Ραδιοφωνική φωνή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1882
+#: src/ui/window.rs:2370
 msgid "Echo voice"
 msgstr "Φωνή με ηχώ"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1892
+#: src/ui/window.rs:2382
 msgid "Effect"
 msgstr "Εφέ"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1893
+#: src/ui/window.rs:2383
 msgid "Intensity"
 msgstr "Ένταση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1897
+#: src/ui/window.rs:2387
 msgid "Voice effects"
 msgstr "Εφέ φωνής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1914
+#: src/ui/window.rs:2404
 msgid "Could not apply voice effect"
 msgstr "Δεν ήταν δυνατή η εφαρμογή εφέ φωνής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1948
+#: src/ui/window.rs:2438
 msgid "Could not equalize recording"
 msgstr "Δεν ήταν δυνατή η εξίσωση της ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1960
+#: src/ui/window.rs:2450
 msgid "Reverse recording"
 msgstr "Αντιστροφή εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1961
+#: src/ui/window.rs:2451
 msgid "Create a new recording with the audio reversed."
 msgstr "Δημιουργήστε μια νέα εγγραφή με αντιστραμμένο τον ήχο."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:1982
+#: src/ui/window.rs:2471
 msgid "Could not reverse recording"
 msgstr "Αδυναμία αντιστροφής εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2002
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2038
+#: src/ui/window.rs:2492 src/ui/window.rs:2525
 msgid "Could not merge recordings"
 msgstr "Αδυναμία συγχώνευσης εγγραφών"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2003
+#: src/ui/window.rs:2493
 msgid "There is no second recording to merge."
 msgstr "Δεν υπάρχει δεύτερη εγγραφή για συγχώνευση."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2015
+#: src/ui/window.rs:2505
 msgid "Append recording"
 msgstr "Προσθήκη εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2018
+#: src/ui/window.rs:2508
 msgid "Merge recordings"
 msgstr "Συγχώνευση εγγραφών"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2050
+#: src/ui/window.rs:2543
 msgid "MP3 audio (.mp3)"
 msgstr "Ήχος MP3 (.mp3)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2051
+#: src/ui/window.rs:2544
 msgid "WAV audio (.wav)"
 msgstr "Ήχος WAV (.wav)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2052
+#: src/ui/window.rs:2545
 msgid "Opus audio (.opus)"
 msgstr "Ήχος Opus (.opus)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2053
+#: src/ui/window.rs:2546
 msgid "FLAC audio (.flac)"
 msgstr "Ήχος FLAC (.flac)"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2057
+#: src/ui/window.rs:2551
 msgid "Low"
 msgstr "Χαμηλή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2058
+#: src/ui/window.rs:2551
 msgid "Medium"
 msgstr "Μεσαία"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2059
+#: src/ui/window.rs:2551
 msgid "High"
 msgstr "Υψηλή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2063
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2069
+#: src/ui/window.rs:2554 src/ui/window.rs:2560
 msgid "Original"
 msgstr "Πρωτότυπο"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2064
+#: src/ui/window.rs:2554
 msgid "Mono"
 msgstr "Μονοφωνικό"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2065
+#: src/ui/window.rs:2554
 msgid "Stereo"
 msgstr "Στερεοφωνικό"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2070
+#: src/ui/window.rs:2561
 msgid "48 kHz"
 msgstr "48 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2071
+#: src/ui/window.rs:2562
 msgid "44.1 kHz"
 msgstr "44,1 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2072
+#: src/ui/window.rs:2563
 msgid "24 kHz"
 msgstr "24 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2073
+#: src/ui/window.rs:2564
 msgid "16 kHz"
 msgstr "16 kHz"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2079
+#: src/ui/window.rs:2572
 msgid "Format"
 msgstr "Μορφή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2080
+#: src/ui/window.rs:2573
 msgid "Quality"
 msgstr "Ποιότητα"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2081
+#: src/ui/window.rs:2574
 msgid "Channels"
 msgstr "Κανάλια"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2082
+#: src/ui/window.rs:2575
 msgid "Sample rate"
 msgstr "Συχνότητα δειγματοληψίας"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2086
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2115
+#: src/ui/window.rs:2579 src/ui/window.rs:2617
 msgid "Export recording"
 msgstr "Εξαγωγή εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2135
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2147
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2421
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2424
+#: src/ui/window.rs:2642 src/ui/window.rs:2651 src/ui/window.rs:2949
+#: src/ui/window.rs:2952
 msgid "Could not export recording"
 msgstr "Αδυναμία εξαγωγής εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2136
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2148
+#: src/ui/window.rs:2652
 msgid "The selected destination is not a local file."
 msgstr "Ο επιλεγμένος προορισμός δεν είναι τοπικό αρχείο."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2209
+#: src/ui/window.rs:2715
 msgid "WAV audio"
 msgstr "Ήχος WAV"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2210
+#: src/ui/window.rs:2716
 msgid "MP3 audio"
 msgstr "Ήχος MP3"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2211
+#: src/ui/window.rs:2717
 msgid "Opus audio"
 msgstr "Ήχος Opus"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2212
+#: src/ui/window.rs:2718
 msgid "FLAC audio"
 msgstr "Ήχος FLAC"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2234
+#: src/ui/window.rs:2741
 msgid "Flat"
 msgstr "Επίπεδος"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2235
+#: src/ui/window.rs:2742
 msgid "Voice clarity"
 msgstr "Καθαρότητα φωνής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2236
+#: src/ui/window.rs:2743
 msgid "Warm"
 msgstr "Ζεστός"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2237
+#: src/ui/window.rs:2744
 msgid "Bright"
 msgstr "Φωτεινός"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2238
+#: src/ui/window.rs:2745
 msgid "Bass cut"
 msgstr "Αποκοπή μπάσων"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2240
+#: src/ui/window.rs:2749
 msgid "Preset"
 msgstr "Προεπιλογή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2400
+#: src/ui/window.rs:2890
+msgid "Please wait"
+msgstr "Παρακαλώ περιμένετε"
+
+#: src/ui/window.rs:2891
+msgid "Another operation is still running."
+msgstr "Μια άλλη λειτουργία εκτελείται ακόμη."
+
+#: src/ui/window.rs:2922
 msgid "The audio task stopped unexpectedly."
 msgstr "Η εργασία ήχου σταμάτησε απροσδόκητα."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2418
+#: src/ui/window.rs:2946
 msgid "Recording exported"
 msgstr "Η εγγραφή εξήχθη"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2419
+#: src/ui/window.rs:2947
 msgid "The file was exported successfully."
 msgstr "Το αρχείο εξήχθη επιτυχώς."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2425
+#: src/ui/window.rs:2953
 msgid "The export task stopped unexpectedly."
 msgstr "Η εργασία εξαγωγής σταμάτησε απροσδόκητα."
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2435
+#: src/ui/window.rs:2963
 msgid "Apply"
 msgstr "Εφαρμογή"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2833
+#: src/ui/window.rs:3417
 msgid "Trim the selected recording"
 msgstr "Περικοπή της επιλεγμένης εγγραφής"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2834
+#: src/ui/window.rs:3418
 msgid "Change the selected recording volume"
 msgstr "Αλλαγή έντασης της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2835
+#: src/ui/window.rs:3419
 msgid "Change the selected recording speed"
 msgstr "Αλλαγή ταχύτητας της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2836
+#: src/ui/window.rs:3420
 msgid "Change the selected recording pitch"
 msgstr "Αλλαγή τόνου της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2837
+#: src/ui/window.rs:3421
 msgid "Apply a voice effect to the selected recording"
 msgstr "Εφαρμογή εφέ φωνής στην επιλεγμένη ηχογράφηση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2838
+#: src/ui/window.rs:3422
 msgid "Adjust the selected recording frequency bands"
 msgstr "Ρύθμιση ζωνών συχνοτήτων της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2839
+#: src/ui/window.rs:3423
 msgid "Reverse the selected recording"
 msgstr "Αντιστροφή της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2840
+#: src/ui/window.rs:3424
 msgid "Merge the selected recording with another recording"
 msgstr "Συγχώνευση της επιλεγμένης ηχογράφησης με άλλη ηχογράφηση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2841
+#: src/ui/window.rs:3425
 msgid "Export the selected recording"
 msgstr "Εξαγωγή της επιλεγμένης ηχογράφησης"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:2877
+#: src/ui/window.rs:3461
 msgid "Saved recording"
 msgstr "Αποθηκευμένη ηχογράφηση"
 
-#: /home/talesam/Servidor/GitHub/BigCommunity/bigrecorder/src/ui/window.rs:3094
+#: src/ui/window.rs:3636
 msgid "OK"
 msgstr "ΟΚ"
-
-#~ msgid "Recordings are saved in Music/BigRecorder"
-#~ msgstr "Οι εγγραφές αποθηκεύονται στο Music/BigRecorder"
-
-#, rust-format
-#~ msgid "Recording to {path}"
-#~ msgstr "Ηχογράφηση στο {path}"
-
-#, rust-format
-#~ msgid "Saved to {path}"
-#~ msgstr "Αποθηκεύτηκε στο {path}"
-
-#~ msgid "Start seconds"
-#~ msgstr "Δευτερόλεπτα έναρξης"
-
-#~ msgid "End seconds"
-#~ msgstr "Δευτερόλεπτα λήξης"
-
-#, rust-format
-#~ msgid "Duration {duration}"
-#~ msgstr "Διάρκεια {duration}"
