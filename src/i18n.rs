@@ -17,10 +17,25 @@ pub fn gettext(message: &str) -> String {
     gettextrs::dgettext(GETTEXT_PACKAGE, message)
 }
 
+pub fn ngettext(singular: &str, plural: &str, n: u32) -> String {
+    gettextrs::dngettext(GETTEXT_PACKAGE, singular, plural, n)
+}
+
+/// Replaces each placeholder key in a single pass, so substituted values that
+/// happen to contain another key (e.g. a file named "{count}") stay intact.
 pub fn format_message(message: &str, values: &[(&str, &str)]) -> String {
-    let mut output = message.to_string();
-    for (key, value) in values {
-        output = output.replace(key, value);
+    let mut output = String::with_capacity(message.len());
+    let mut rest = message;
+    'scan: while let Some(character) = rest.chars().next() {
+        for (key, value) in values {
+            if !key.is_empty() && rest.starts_with(key) {
+                output.push_str(value);
+                rest = &rest[key.len()..];
+                continue 'scan;
+            }
+        }
+        output.push(character);
+        rest = &rest[character.len_utf8()..];
     }
     output
 }
@@ -222,6 +237,18 @@ mod tests {
     use std::sync::Mutex;
 
     static ENV_LOCK: Mutex<()> = Mutex::new(());
+
+    #[test]
+    fn format_message_substitutes_in_a_single_pass() {
+        assert_eq!(
+            format_message(
+                "{recording} has {count} takes",
+                &[("{recording}", "{count}"), ("{count}", "3")]
+            ),
+            "{count} has 3 takes"
+        );
+        assert_eq!(format_message("ação {n}", &[("{n}", "ç")]), "ação ç");
+    }
 
     #[test]
     fn gettext_uses_package_domain_after_default_domain_changes() {

@@ -74,21 +74,6 @@ impl Player {
             }
         }
 
-        if !finished
-            && let (Some(position), Some(duration)) = (
-                pipeline.query_position::<gst::ClockTime>(),
-                pipeline.query_duration::<gst::ClockTime>(),
-            )
-        {
-            let position = Duration::from(position);
-            let duration = Duration::from(duration);
-            if duration > Duration::ZERO
-                && position >= duration.saturating_sub(Duration::from_millis(120))
-            {
-                finished = true;
-            }
-        }
-
         if finished {
             self.stop()?;
         }
@@ -129,10 +114,13 @@ impl Player {
             .context("Missing GStreamer element: playbin")?
             .downcast::<gst::Pipeline>()
             .map_err(|_| anyhow!("GStreamer playbin is not a pipeline"))?;
+        // Recordings are audio only; skip the video and subtitle machinery.
+        pipeline.set_property_from_str("flags", "audio+soft-volume");
 
-        pipeline
-            .set_state(gst::State::Playing)
-            .map_err(|err| anyhow!("Failed to start playback pipeline: {err:?}"))?;
+        if let Err(err) = pipeline.set_state(gst::State::Playing) {
+            let _ = pipeline.set_state(gst::State::Null);
+            return Err(anyhow!("Failed to start playback pipeline: {err:?}"));
+        }
 
         self.current_path = Some(path.to_path_buf());
         self.pipeline = Some(pipeline);
@@ -144,5 +132,13 @@ impl Player {
         self.current_path
             .as_deref()
             .is_some_and(|current_path| current_path == path)
+    }
+}
+
+impl Drop for Player {
+    fn drop(&mut self) {
+        if let Some(pipeline) = self.pipeline.take() {
+            let _ = pipeline.set_state(gst::State::Null);
+        }
     }
 }

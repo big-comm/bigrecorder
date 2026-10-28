@@ -6,9 +6,13 @@ use std::time::{Duration, Instant};
 use anyhow::{Context, Result, anyhow};
 use gst::prelude::*;
 
+use super::processing;
+
 pub const WAVEFORM_BINS: usize = 64;
 
 const RECORDINGS_DIRECTORY_NAME: &str = "BigRecorder";
+const STOP_EOS_TIMEOUT: Duration = Duration::from_secs(5);
+const DROP_EOS_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Copy, Debug)]
 pub struct AudioFrame {
@@ -44,10 +48,12 @@ impl Recorder {
         let output_path = next_recording_path()?;
         let recording_pipeline = build_recording_pipeline(&output_path, self.device.as_ref())?;
 
-        recording_pipeline
-            .pipeline
-            .set_state(gst::State::Playing)
-            .map_err(|err| anyhow!("Failed to start recording pipeline: {err:?}"))?;
+        if let Err(err) = recording_pipeline.pipeline.set_state(gst::State::Playing) {
+            // The filesink may already have created the file; don't leave it behind.
+            let _ = recording_pipeline.pipeline.set_state(gst::State::Null);
+            let _ = fs::remove_file(&output_path);
+            return Err(anyhow!("Failed to start recording pipeline: {err:?}"));
+        }
 
         self.record_valve = Some(recording_pipeline.record_valve);
         self.sample_sink = Some(recording_pipeline.sample_sink);
@@ -80,6 +86,12 @@ impl Recorder {
     }
 
     pub fn stop(&mut self) -> Result<Option<PathBuf>> {
+        self.finish(STOP_EOS_TIMEOUT)
+    }
+
+    /// Drains the pipeline with EOS so wavenc can finalize the header. When
+    /// that fails, the audio already on disk is kept and its header repaired.
+    fn finish(&mut self, eos_timeout: Duration) -> Result<Option<PathBuf>> {
         let Some(pipeline) = self.pipeline.take() else {
             return Ok(None);
         };
@@ -92,13 +104,28 @@ impl Recorder {
 
         let _ = pipeline.send_event(gst::event::Eos::new());
 
-        let eos_result = wait_for_eos(&pipeline);
+        let eos_result = wait_for_eos(&pipeline, eos_timeout);
 
         let stop_result = pipeline
             .set_state(gst::State::Null)
             .map_err(|err| anyhow!("Failed to stop recording pipeline: {err:?}"));
 
-        eos_result?;
+        if let Err(err) = eos_result {
+            let Some(path) = output_path
+                .filter(|path| fs::metadata(path).is_ok_and(|metadata| metadata.len() > 0))
+            else {
+                return Err(err);
+            };
+
+            eprintln!(
+                "Recording was not finalized cleanly, keeping {}: {err}",
+                path.display()
+            );
+            if let Err(err) = processing::repair_wav_header(&path) {
+                eprintln!("Failed to repair recording header: {err}");
+            }
+            return Ok(Some(path));
+        }
         stop_result?;
 
         Ok(output_path)
@@ -139,6 +166,14 @@ impl Recorder {
     }
 }
 
+impl Drop for Recorder {
+    fn drop(&mut self) {
+        if let Err(err) = self.finish(DROP_EOS_TIMEOUT) {
+            eprintln!("Failed to finalize recording: {err}");
+        }
+    }
+}
+
 struct RecordingPipeline {
     pipeline: gst::Pipeline,
     record_valve: gst::Element,
@@ -156,30 +191,45 @@ fn build_recording_pipeline(
     };
     let convert = make_element("audioconvert")?;
     let resample = make_element("audioresample")?;
-    let raw_caps = gst::Caps::builder("audio/x-raw")
-        .field("format", "F32LE")
+    // 16-bit PCM is plenty for voice and halves the size of the recording.
+    let record_caps = gst::Caps::builder("audio/x-raw")
+        .field("format", "S16LE")
+        .field("layout", "interleaved")
         .field("channels", 1_i32)
         .field("rate", 48_000_i32)
         .build();
     let caps_filter = gst::ElementFactory::make("capsfilter")
-        .property("caps", &raw_caps)
+        .property("caps", &record_caps)
         .build()
         .context("Missing GStreamer element: capsfilter")?;
     let tee = make_element("tee")?;
-    let analysis_queue = make_element("queue")?;
+    // The level meter only wants the freshest audio, so this branch may drop.
+    let analysis_queue = gst::ElementFactory::make("queue")
+        .property_from_str("leaky", "downstream")
+        .property("max-size-buffers", 4_u32)
+        .property("max-size-bytes", 0_u32)
+        .property("max-size-time", 0_u64)
+        .build()
+        .context("Missing GStreamer element: queue")?;
+    let analysis_convert = make_element("audioconvert")?;
+    let analysis_caps = gst::Caps::builder("audio/x-raw")
+        .field("format", "F32LE")
+        .field("channels", 1_i32)
+        .field("rate", 48_000_i32)
+        .build();
     let sample_sink = gst_app::AppSink::builder()
-        .caps(&raw_caps)
+        .caps(&analysis_caps)
         .sync(false)
         .drop(true)
         .max_buffers(2)
         .wait_on_eos(false)
         .build();
+    // Never leaky: every buffer here ends up in the file.
     let record_queue = make_element("queue")?;
     let record_valve = gst::ElementFactory::make("valve")
         .property("drop", false)
         .build()
         .context("Missing GStreamer element: valve")?;
-    let record_convert = make_element("audioconvert")?;
     let encoder = make_element("wavenc")?;
     let output_text = output_path.to_string_lossy();
     let sink = gst::ElementFactory::make("filesink")
@@ -195,9 +245,9 @@ fn build_recording_pipeline(
             &caps_filter,
             &tee,
             &analysis_queue,
+            &analysis_convert,
             &record_queue,
             &record_valve,
-            &record_convert,
             &encoder,
             &sink,
         ])
@@ -211,18 +261,12 @@ fn build_recording_pipeline(
     gst::Element::link_many([
         &tee,
         &analysis_queue,
+        &analysis_convert,
         sample_sink.upcast_ref::<gst::Element>(),
     ])
     .context("Failed to link audio monitor pipeline")?;
-    gst::Element::link_many([
-        &tee,
-        &record_queue,
-        &record_valve,
-        &record_convert,
-        &encoder,
-        &sink,
-    ])
-    .context("Failed to link recording output pipeline")?;
+    gst::Element::link_many([&tee, &record_queue, &record_valve, &encoder, &sink])
+        .context("Failed to link recording output pipeline")?;
 
     Ok(RecordingPipeline {
         pipeline,
@@ -310,11 +354,11 @@ fn make_element(factory: &str) -> Result<gst::Element> {
         .with_context(|| format!("Missing GStreamer element: {factory}"))
 }
 
-fn wait_for_eos(pipeline: &gst::Pipeline) -> Result<()> {
+fn wait_for_eos(pipeline: &gst::Pipeline, timeout: Duration) -> Result<()> {
     let bus = pipeline
         .bus()
         .ok_or_else(|| anyhow!("Recording pipeline has no message bus"))?;
-    let deadline = Instant::now() + Duration::from_secs(5);
+    let deadline = Instant::now() + timeout;
 
     loop {
         let remaining = deadline.saturating_duration_since(Instant::now());
@@ -359,7 +403,24 @@ fn next_recording_path() -> Result<PathBuf> {
         .format("%Y-%m-%d %H-%M-%S")
         .context("Failed to format local time")?;
 
-    Ok(directory.join(format!("Recording {timestamp}.wav")))
+    unique_recording_path(&directory, &format!("Recording {timestamp}"))
+}
+
+/// Returns `<stem>.wav`, or `<stem> (2).wav`, `<stem> (3).wav`... when a
+/// recording started within the same second already took the name.
+fn unique_recording_path(directory: &Path, stem: &str) -> Result<PathBuf> {
+    for index in 1..1000 {
+        let candidate = if index == 1 {
+            directory.join(format!("{stem}.wav"))
+        } else {
+            directory.join(format!("{stem} ({index}).wav"))
+        };
+        if !candidate.exists() {
+            return Ok(candidate);
+        }
+    }
+
+    Err(anyhow!("Could not create a unique recording file"))
 }
 
 pub fn recordings_directory() -> PathBuf {
@@ -420,8 +481,8 @@ fn audio_frame_from_f32le(bytes: &[u8]) -> AudioFrame {
     let mut sum_squares = 0.0;
     let mut valid_samples = 0_usize;
 
-    for (sample_index, chunk) in bytes.chunks_exact(4).enumerate() {
-        let sample = f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]) as f64;
+    for (sample_index, chunk) in bytes.as_chunks::<4>().0.iter().enumerate() {
+        let sample = f32::from_le_bytes(*chunk) as f64;
         if !sample.is_finite() {
             continue;
         }
@@ -453,7 +514,27 @@ fn display_amplitude(amplitude: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::default_input_mute_from_wpctl;
+    use super::{default_input_mute_from_wpctl, unique_recording_path};
+    use std::fs;
+
+    #[test]
+    fn recording_names_never_collide() {
+        let directory =
+            std::env::temp_dir().join(format!("bigrecorder-names-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&directory);
+        fs::create_dir_all(&directory).expect("create test dir");
+
+        let first = unique_recording_path(&directory, "Recording X").expect("first name");
+        assert_eq!(first, directory.join("Recording X.wav"));
+        fs::write(&first, b"").expect("create first");
+        let second = unique_recording_path(&directory, "Recording X").expect("second name");
+        assert_eq!(second, directory.join("Recording X (2).wav"));
+        fs::write(&second, b"").expect("create second");
+        let third = unique_recording_path(&directory, "Recording X").expect("third name");
+        assert_eq!(third, directory.join("Recording X (3).wav"));
+
+        let _ = fs::remove_dir_all(&directory);
+    }
 
     #[test]
     fn parses_wpctl_default_input_mute_state() {
