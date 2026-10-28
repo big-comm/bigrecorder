@@ -201,6 +201,7 @@ pub fn build(app: &adw::Application) {
         .default_height(720)
         .resizable(false)
         .build();
+    window.add_css_class("bigrecorder");
 
     let recorder = Rc::new(RefCell::new(Recorder::new()));
     let player = Rc::new(RefCell::new(Player::new()));
