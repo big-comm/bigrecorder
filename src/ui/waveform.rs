@@ -1,29 +1,84 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use std::time::Duration;
 
 use gtk::glib;
 use gtk::prelude::*;
 
 use crate::audio::recorder::WAVEFORM_BINS;
+use crate::ui::style::theme_color;
 
 const FRESH_BARS: usize = 3;
+/// The smoothing factors below were tuned for one step every 33 ms; tick
+/// callbacks run at the display refresh rate, so steps are rescaled by time.
+const REFERENCE_STEP_US: f64 = 33_000.0;
+const SILENCE: f64 = 0.003;
 
 #[derive(Clone)]
 pub struct Waveform {
     area: gtk::DrawingArea,
-    active: Rc<Cell<bool>>,
-    target_level: Rc<Cell<f64>>,
-    target_peaks: Rc<RefCell<[f64; WAVEFORM_BINS]>>,
+    state: Rc<State>,
+}
+
+struct State {
+    active: Cell<bool>,
+    ticking: Cell<bool>,
+    last_frame_time: Cell<Option<i64>>,
+    target_level: Cell<f64>,
+    current_level: Cell<f64>,
+    target_peaks: RefCell<[f64; WAVEFORM_BINS]>,
+    current_peaks: RefCell<[f64; WAVEFORM_BINS]>,
+}
+
+impl State {
+    /// Advances the smoothing animation by `steps` reference steps and reports
+    /// whether anything is still visible or moving.
+    fn advance(&self, steps: f64) -> bool {
+        let active = self.active.get();
+        let target = if active { self.target_level.get() } else { 0.0 };
+        let current = self.current_level.get();
+        let mut level = current + (target - current) * smoothing(0.22, steps);
+        if !active && level < SILENCE {
+            level = 0.0;
+        }
+        self.current_level.set(level);
+
+        let target_peaks = self.target_peaks.borrow();
+        let mut current_peaks = self.current_peaks.borrow_mut();
+        let mut visible = level > 0.0;
+        for (current_peak, target_peak) in current_peaks.iter_mut().zip(target_peaks.iter()) {
+            let target_peak = if active { *target_peak } else { 0.0 };
+            let factor = if target_peak > *current_peak {
+                smoothing(0.48, steps)
+            } else {
+                smoothing(0.18, steps)
+            };
+            *current_peak += (target_peak - *current_peak) * factor;
+            if *current_peak < SILENCE {
+                *current_peak = 0.0;
+            }
+            visible |= *current_peak > 0.0;
+        }
+
+        active || visible
+    }
+}
+
+/// Converts a per-reference-step smoothing factor into one for `steps` steps.
+fn smoothing(factor: f64, steps: f64) -> f64 {
+    1.0 - (1.0 - factor).powf(steps)
 }
 
 impl Waveform {
     pub fn new() -> Self {
-        let active = Rc::new(Cell::new(false));
-        let target_level = Rc::new(Cell::new(0.0));
-        let current_level = Rc::new(Cell::new(0.0));
-        let target_peaks = Rc::new(RefCell::new([0.0_f64; WAVEFORM_BINS]));
-        let current_peaks = Rc::new(RefCell::new([0.0_f64; WAVEFORM_BINS]));
+        let state = Rc::new(State {
+            active: Cell::new(false),
+            ticking: Cell::new(false),
+            last_frame_time: Cell::new(None),
+            target_level: Cell::new(0.0),
+            current_level: Cell::new(0.0),
+            target_peaks: RefCell::new([0.0_f64; WAVEFORM_BINS]),
+            current_peaks: RefCell::new([0.0_f64; WAVEFORM_BINS]),
+        });
 
         let area = gtk::DrawingArea::builder()
             .height_request(108)
@@ -31,65 +86,20 @@ impl Waveform {
             .build();
         area.add_css_class("waveform");
 
-        let draw_active = Rc::clone(&active);
-        let draw_level = Rc::clone(&current_level);
-        let draw_peaks = Rc::clone(&current_peaks);
+        let draw_state = Rc::clone(&state);
         area.set_draw_func(move |area, context, width, height| {
             draw_waveform(
                 area,
                 context,
                 f64::from(width),
                 f64::from(height),
-                draw_active.get(),
-                draw_level.get(),
-                &draw_peaks.borrow(),
+                draw_state.active.get(),
+                draw_state.current_level.get(),
+                &draw_state.current_peaks.borrow(),
             );
         });
 
-        let tick_area = area.clone();
-        let tick_active = Rc::clone(&active);
-        let tick_target = Rc::clone(&target_level);
-        let tick_level = Rc::clone(&current_level);
-        let tick_target_peaks = Rc::clone(&target_peaks);
-        let tick_current_peaks = Rc::clone(&current_peaks);
-        glib::timeout_add_local(Duration::from_millis(33), move || {
-            let target = if tick_active.get() {
-                tick_target.get()
-            } else {
-                0.0
-            };
-            let current = tick_level.get();
-            tick_level.set(current + (target - current) * 0.22);
-
-            let target_peaks = tick_target_peaks.borrow();
-            let mut current_peaks = tick_current_peaks.borrow_mut();
-            for (index, current_peak) in current_peaks.iter_mut().enumerate() {
-                let target_peak = if tick_active.get() {
-                    target_peaks[index]
-                } else {
-                    0.0
-                };
-                let smoothing = if target_peak > *current_peak {
-                    0.48
-                } else {
-                    0.18
-                };
-                *current_peak += (target_peak - *current_peak) * smoothing;
-                if *current_peak < 0.003 {
-                    *current_peak = 0.0;
-                }
-            }
-
-            tick_area.queue_draw();
-            glib::ControlFlow::Continue
-        });
-
-        Self {
-            area,
-            active,
-            target_level,
-            target_peaks,
-        }
+        Self { area, state }
     }
 
     pub fn widget(&self) -> &gtk::DrawingArea {
@@ -97,30 +107,65 @@ impl Waveform {
     }
 
     pub fn set_active(&self, active: bool) {
-        self.active.set(active);
+        self.state.active.set(active);
         if !active {
-            self.target_level.set(0.0);
-            self.target_peaks.borrow_mut().fill(0.0);
+            self.state.target_level.set(0.0);
+            self.state.target_peaks.borrow_mut().fill(0.0);
         }
+        // Also when deactivating, so the bars decay smoothly to silence.
+        self.ensure_animating();
     }
 
     pub fn set_level(&self, level: f64) {
-        self.target_level.set(level.clamp(0.0, 1.0));
+        self.state.target_level.set(level.clamp(0.0, 1.0));
+        self.ensure_animating();
     }
 
     pub fn set_peaks(&self, peaks: [f64; WAVEFORM_BINS]) {
-        let mut target_peaks = self.target_peaks.borrow_mut();
-        target_peaks.rotate_left(FRESH_BARS);
+        {
+            let mut target_peaks = self.state.target_peaks.borrow_mut();
+            target_peaks.rotate_left(FRESH_BARS);
 
-        for index in 0..FRESH_BARS {
-            let chunk_start = index * peaks.len() / FRESH_BARS;
-            let chunk_end = (index + 1) * peaks.len() / FRESH_BARS;
-            let peak = peaks[chunk_start..chunk_end]
-                .iter()
-                .copied()
-                .fold(0.0_f64, f64::max);
-            target_peaks[WAVEFORM_BINS - FRESH_BARS + index] = peak.clamp(0.0, 1.0);
+            for index in 0..FRESH_BARS {
+                let chunk_start = index * peaks.len() / FRESH_BARS;
+                let chunk_end = (index + 1) * peaks.len() / FRESH_BARS;
+                let peak = peaks[chunk_start..chunk_end]
+                    .iter()
+                    .copied()
+                    .fold(0.0_f64, f64::max);
+                target_peaks[WAVEFORM_BINS - FRESH_BARS + index] = peak.clamp(0.0, 1.0);
+            }
         }
+        self.ensure_animating();
+    }
+
+    /// Installs a frame-clock tick callback unless one is already running.
+    /// The callback removes itself once the waveform is idle and silent, and
+    /// GTK drops it with the widget, so nothing outlives the view.
+    fn ensure_animating(&self) {
+        if self.state.ticking.replace(true) {
+            return;
+        }
+        self.state.last_frame_time.set(None);
+
+        let state = Rc::clone(&self.state);
+        self.area.add_tick_callback(move |area, clock| {
+            let now = clock.frame_time();
+            let steps = state
+                .last_frame_time
+                .replace(Some(now))
+                .map(|last| ((now - last) as f64 / REFERENCE_STEP_US).clamp(0.0, 10.0))
+                .unwrap_or(1.0);
+
+            let keep_going = state.advance(steps);
+            area.queue_draw();
+            if keep_going {
+                glib::ControlFlow::Continue
+            } else {
+                state.ticking.set(false);
+                glib::ControlFlow::Break
+            }
+        });
     }
 }
 
@@ -133,17 +178,15 @@ fn draw_waveform(
     level: f64,
     peaks: &[f64; WAVEFORM_BINS],
 ) {
+    // The rounded `.waveform` background is painted by CSS; only bars here.
     let padding = 14.0;
     let center = height / 2.0;
     let available_width = width - padding * 2.0;
     let slot = available_width / peaks.len() as f64;
     let bar_width = (slot * 0.34).clamp(1.6, 3.0);
     let max_bar = (height - padding * 2.0).max(2.0);
-    let view_bg = css_color(widget, "view_bg_color", (0.075, 0.082, 0.110));
-
-    context.set_source_rgb(view_bg.0, view_bg.1, view_bg.2);
-    context.rectangle(0.0, 0.0, width, height);
-    let _ = context.fill();
+    // Follows the system accent and the light/dark variant.
+    let accent_hsv = rgb_to_hsv(theme_color(widget, "accent_color", (0.21, 0.52, 0.89)));
 
     context.set_line_cap(gtk::cairo::LineCap::Round);
 
@@ -158,8 +201,8 @@ fn draw_waveform(
             continue;
         }
 
-        // Smooth blue -> purple -> pink gradient across the whole waveform.
-        let (r, g, b) = spectrum_color(index as f64 / last);
+        // Smooth gradient across the waveform, centred on the accent colour.
+        let (r, g, b) = spectrum_color(accent_hsv, index as f64 / last);
         let x = padding + index as f64 * slot + slot / 2.0;
         let y1 = center - bar_height / 2.0;
         let y2 = center + bar_height / 2.0;
@@ -186,38 +229,91 @@ fn draw_waveform(
     }
 }
 
-/// Maps a position in `0.0..=1.0` to the blue -> purple -> pink neon gradient.
-fn spectrum_color(t: f64) -> (f64, f64, f64) {
-    const BLUE: (f64, f64, f64) = (0.25, 0.49, 1.0);
-    const PURPLE: (f64, f64, f64) = (0.66, 0.33, 1.0);
-    const PINK: (f64, f64, f64) = (1.0, 0.39, 0.78);
+/// Maps a position in `0.0..=1.0` to a hue sweep around the accent colour
+/// (the default blue accent gives the original blue -> purple -> pink look).
+fn spectrum_color(accent: (f64, f64, f64), t: f64) -> (f64, f64, f64) {
+    const HUE_START: f64 = -20.0;
+    const HUE_END: f64 = 75.0;
 
+    let (hue, saturation, value) = accent;
     let t = t.clamp(0.0, 1.0);
-    if t < 0.5 {
-        lerp(BLUE, PURPLE, t * 2.0)
+    let shifted = (hue + HUE_START + (HUE_END - HUE_START) * t).rem_euclid(360.0);
+    // Greys (e.g. a monochrome accent) stay grey instead of turning a hue.
+    hsv_to_rgb((shifted, saturation, value))
+}
+
+fn rgb_to_hsv((r, g, b): (f64, f64, f64)) -> (f64, f64, f64) {
+    let max = r.max(g).max(b);
+    let min = r.min(g).min(b);
+    let delta = max - min;
+    let hue = if delta <= f64::EPSILON {
+        0.0
+    } else if max == r {
+        60.0 * ((g - b) / delta).rem_euclid(6.0)
+    } else if max == g {
+        60.0 * ((b - r) / delta + 2.0)
     } else {
-        lerp(PURPLE, PINK, (t - 0.5) * 2.0)
+        60.0 * ((r - g) / delta + 4.0)
+    };
+    let saturation = if max <= f64::EPSILON {
+        0.0
+    } else {
+        delta / max
+    };
+    (hue, saturation, max)
+}
+
+fn hsv_to_rgb((hue, saturation, value): (f64, f64, f64)) -> (f64, f64, f64) {
+    let chroma = value * saturation;
+    let sector = hue / 60.0;
+    let x = chroma * (1.0 - (sector.rem_euclid(2.0) - 1.0).abs());
+    let (r, g, b) = match sector as u32 {
+        0 => (chroma, x, 0.0),
+        1 => (x, chroma, 0.0),
+        2 => (0.0, chroma, x),
+        3 => (0.0, x, chroma),
+        4 => (x, 0.0, chroma),
+        _ => (chroma, 0.0, x),
+    };
+    let m = value - chroma;
+    (r + m, g + m, b + m)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hsv_round_trip() {
+        for color in [
+            (0.25, 0.49, 1.0),
+            (1.0, 0.39, 0.78),
+            (0.2, 0.8, 0.3),
+            (0.5, 0.5, 0.5),
+        ] {
+            let (r, g, b) = hsv_to_rgb(rgb_to_hsv(color));
+            assert!((r - color.0).abs() < 1e-9);
+            assert!((g - color.1).abs() < 1e-9);
+            assert!((b - color.2).abs() < 1e-9);
+        }
     }
-}
 
-fn lerp(a: (f64, f64, f64), b: (f64, f64, f64), t: f64) -> (f64, f64, f64) {
-    (
-        a.0 + (b.0 - a.0) * t,
-        a.1 + (b.1 - a.1) * t,
-        a.2 + (b.2 - a.2) * t,
-    )
-}
-
-fn css_color(widget: &gtk::DrawingArea, name: &str, fallback: (f64, f64, f64)) -> (f64, f64, f64) {
-    widget
-        .style_context()
-        .lookup_color(name)
-        .map(|color| {
-            (
-                f64::from(color.red()),
-                f64::from(color.green()),
-                f64::from(color.blue()),
-            )
-        })
-        .unwrap_or(fallback)
+    #[test]
+    fn idle_silent_state_stops_animating() {
+        let state = State {
+            active: Cell::new(false),
+            ticking: Cell::new(true),
+            last_frame_time: Cell::new(None),
+            target_level: Cell::new(0.0),
+            current_level: Cell::new(0.5),
+            target_peaks: RefCell::new([0.0; WAVEFORM_BINS]),
+            current_peaks: RefCell::new([0.8; WAVEFORM_BINS]),
+        };
+        let mut frames = 0;
+        while state.advance(1.0) {
+            frames += 1;
+            assert!(frames < 200, "decay never settles");
+        }
+        assert!(state.current_peaks.borrow().iter().all(|peak| *peak == 0.0));
+    }
 }

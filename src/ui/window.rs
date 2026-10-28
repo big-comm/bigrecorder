@@ -14,7 +14,7 @@ use crate::audio::processing::{
     ExportSampleRate, VoiceEffectPreset,
 };
 use crate::audio::recorder::{Recorder, default_input_is_muted, input_devices, saved_recordings};
-use crate::i18n::{format_message, gettext};
+use crate::i18n::{format_message, gettext, ngettext};
 use crate::ui::playback_bar::PlaybackBar;
 use crate::ui::waveform::Waveform;
 
@@ -53,7 +53,10 @@ struct RecordingRow {
     child: gtk::FlowBoxChild,
     row_widget: gtk::Box,
     path: PathBuf,
+    // Shared with the row's callbacks so a rename updates them in place.
+    path_cell: Rc<RefCell<PathBuf>>,
     title_text: String,
+    title_label: gtk::Label,
     playback_symbol: gtk::Stack,
     playback_bar: PlaybackBar,
     waveform_holder: gtk::Widget,
@@ -84,6 +87,9 @@ struct InputControls {
     selected_mic: Rc<RefCell<Option<String>>>,
     input_ready: Rc<Cell<bool>>,
     block_reason: Rc<Cell<InputBlockReason>>,
+    // Device probing runs off the main thread; only the newest result wins.
+    refresh_generation: Rc<Cell<u64>>,
+    refresh_in_flight: Rc<Cell<bool>>,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -128,6 +134,18 @@ struct ToolContext {
     recording_rows: RecordingRows,
     selected_recording: SelectedRecording,
     player: Rc<RefCell<Player>>,
+    playback_ticker: Rc<RefCell<Option<glib::SourceId>>>,
+    // Set while a processing/export task runs, to refuse duplicate work.
+    busy: Rc<Cell<bool>>,
+}
+
+#[derive(Clone)]
+struct RecordingControls {
+    recorder: Rc<RefCell<Recorder>>,
+    session: Rc<RefCell<Session>>,
+    timer_label: gtk::Label,
+    mode_controls: ModeControls,
+    tool_context: ToolContext,
 }
 
 type RecordingRows = Rc<RefCell<Vec<RecordingRow>>>;
@@ -541,6 +559,8 @@ pub fn build(app: &adw::Application) {
         recording_rows: Rc::clone(&recording_rows),
         selected_recording: Rc::clone(&selected_recording),
         player: Rc::clone(&player),
+        playback_ticker: Rc::new(RefCell::new(None)),
+        busy: Rc::new(Cell::new(false)),
     };
 
     let tools_toggle = gtk::ToggleButton::builder()
@@ -635,12 +655,16 @@ pub fn build(app: &adw::Application) {
         selected_mic: Rc::clone(&selected_mic),
         input_ready: Rc::clone(&input_ready),
         block_reason: Rc::clone(&input_block_reason),
+        refresh_generation: Rc::new(Cell::new(0)),
+        refresh_in_flight: Rc::new(Cell::new(false)),
     };
 
     let mic_popover = gtk::Popover::new();
     mic_popover.add_css_class("mic-popover");
     mic_popover.set_position(gtk::PositionType::Top);
     mic_popover.set_parent(&ready_pill);
+    let parented_popover = mic_popover.clone();
+    ready_pill.connect_destroy(move |_| parented_popover.unparent());
 
     // The picker is rebuilt every time it opens so freshly plugged-in
     // microphones show up. The choice applies to the next recording.
@@ -648,54 +672,18 @@ pub fn build(app: &adw::Application) {
     let picker_controls = input_controls.clone();
     let popup_popover = mic_popover.clone();
     ready_pill.connect_clicked(move |_| {
-        let list = gtk::Box::new(gtk::Orientation::Vertical, 2);
-        list.add_css_class("mic-list");
-
-        let devices = input_devices();
-        if devices.is_empty() {
-            let empty_label = gtk::Label::new(Some(&gettext("No input devices found")));
-            empty_label.add_css_class("muted");
-            empty_label.set_margin_top(8);
-            empty_label.set_margin_bottom(8);
-            empty_label.set_margin_start(10);
-            empty_label.set_margin_end(10);
-            list.append(&empty_label);
-        } else {
-            let default_label = gettext("Default microphone");
-            let default_item = mic_menu_item(
-                &default_label,
-                picker_controls.selected_mic.borrow().is_none(),
-            );
-            let default_recorder = Rc::clone(&mic_recorder);
-            let default_controls = picker_controls.clone();
-            let default_popover = popup_popover.clone();
-            default_item.connect_clicked(move |_| {
-                default_controls.selected_mic.replace(None);
-                default_recorder.borrow_mut().set_device(None);
-                refresh_input_controls(&default_controls);
-                default_popover.popdown();
-            });
-            list.append(&default_item);
-
-            for (name, device) in devices {
-                let checked =
-                    picker_controls.selected_mic.borrow().as_deref() == Some(name.as_str());
-                let item = mic_menu_item(&name, checked);
-                let item_recorder = Rc::clone(&mic_recorder);
-                let item_controls = picker_controls.clone();
-                let item_popover = popup_popover.clone();
-                item.connect_clicked(move |_| {
-                    item_controls.selected_mic.replace(Some(name.clone()));
-                    item_recorder.borrow_mut().set_device(Some(device.clone()));
-                    refresh_input_controls(&item_controls);
-                    item_popover.popdown();
-                });
-                list.append(&item);
-            }
-        }
-
-        popup_popover.set_child(Some(&list));
-        popup_popover.popup();
+        // Enumerating devices can stall on a busy sound server, so do it off
+        // the main thread and open the picker once the list is known.
+        let handle = gio::spawn_blocking(input_devices);
+        let mic_recorder = Rc::clone(&mic_recorder);
+        let picker_controls = picker_controls.clone();
+        let popup_popover = popup_popover.clone();
+        glib::MainContext::default().spawn_local(async move {
+            let devices = handle.await.unwrap_or_default();
+            let list = build_mic_list(&devices, &mic_recorder, &picker_controls, &popup_popover);
+            popup_popover.set_child(Some(&list));
+            popup_popover.popup();
+        });
     });
 
     let action_bar = gtk::CenterBox::new();
@@ -750,7 +738,7 @@ pub fn build(app: &adw::Application) {
     });
 
     load_saved_recordings(&tool_context);
-    refresh_input_controls(&input_controls);
+    refresh_input_controls(&input_controls, true);
 
     connect_controls(
         RecorderWidgets {
@@ -805,6 +793,61 @@ fn level_icon() -> gtk::DrawingArea {
     area
 }
 
+fn build_mic_list(
+    devices: &[(String, gst::Device)],
+    recorder: &Rc<RefCell<Recorder>>,
+    controls: &InputControls,
+    popover: &gtk::Popover,
+) -> gtk::Box {
+    let list = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    list.add_css_class("mic-list");
+
+    if devices.is_empty() {
+        let empty_label = gtk::Label::new(Some(&gettext("No input devices found")));
+        empty_label.add_css_class("muted");
+        empty_label.set_margin_top(8);
+        empty_label.set_margin_bottom(8);
+        empty_label.set_margin_start(10);
+        empty_label.set_margin_end(10);
+        list.append(&empty_label);
+        return list;
+    }
+
+    let default_item = mic_menu_item(
+        &gettext("Default microphone"),
+        controls.selected_mic.borrow().is_none(),
+    );
+    let default_recorder = Rc::clone(recorder);
+    let default_controls = controls.clone();
+    let default_popover = popover.clone();
+    default_item.connect_clicked(move |_| {
+        default_controls.selected_mic.replace(None);
+        default_recorder.borrow_mut().set_device(None);
+        refresh_input_controls(&default_controls, true);
+        default_popover.popdown();
+    });
+    list.append(&default_item);
+
+    for (name, device) in devices {
+        let checked = controls.selected_mic.borrow().as_deref() == Some(name.as_str());
+        let item = mic_menu_item(name, checked);
+        let item_recorder = Rc::clone(recorder);
+        let item_controls = controls.clone();
+        let item_popover = popover.clone();
+        let name = name.clone();
+        let device = device.clone();
+        item.connect_clicked(move |_| {
+            item_controls.selected_mic.replace(Some(name.clone()));
+            item_recorder.borrow_mut().set_device(Some(device.clone()));
+            refresh_input_controls(&item_controls, true);
+            item_popover.popdown();
+        });
+        list.append(&item);
+    }
+
+    list
+}
+
 fn mic_menu_item(label: &str, checked: bool) -> gtk::Button {
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 10);
 
@@ -835,21 +878,45 @@ enum InputStatus {
     SelectedUnavailable,
 }
 
-fn refresh_input_controls(controls: &InputControls) {
-    let devices = input_devices();
-    let selected_mic = controls.selected_mic.borrow().clone();
-    let default_muted = selected_mic.is_none() && default_input_is_muted().unwrap_or(false);
-    let status = match selected_mic.as_deref() {
-        Some(name) if devices.iter().any(|(device_name, _)| device_name == name) => {
-            InputStatus::Ready(name.to_string())
-        }
-        Some(_) => InputStatus::SelectedUnavailable,
-        None if devices.is_empty() => InputStatus::NoDevice,
-        None if default_muted => InputStatus::Muted,
-        None => InputStatus::Ready(gettext("Default microphone")),
-    };
+/// Probes the input devices (and the default source's mute state) on a
+/// worker thread, then updates the pill. Periodic refreshes are skipped while
+/// one is still running; `force` refreshes always run and supersede it.
+fn refresh_input_controls(controls: &InputControls, force: bool) {
+    if !force && controls.refresh_in_flight.get() {
+        return;
+    }
+    let generation = controls.refresh_generation.get().wrapping_add(1);
+    controls.refresh_generation.set(generation);
+    controls.refresh_in_flight.set(true);
 
-    apply_input_status(controls, status);
+    let handle = gio::spawn_blocking(|| {
+        let names: Vec<String> = input_devices().into_iter().map(|(name, _)| name).collect();
+        let default_muted = default_input_is_muted().unwrap_or(false);
+        (names, default_muted)
+    });
+    let controls = controls.clone();
+    glib::MainContext::default().spawn_local(async move {
+        let result = handle.await;
+        if controls.refresh_generation.get() != generation {
+            return;
+        }
+        controls.refresh_in_flight.set(false);
+        let Ok((devices, default_muted)) = result else {
+            return;
+        };
+
+        let selected_mic = controls.selected_mic.borrow().clone();
+        let status = match selected_mic.as_deref() {
+            Some(name) if devices.iter().any(|device_name| device_name == name) => {
+                InputStatus::Ready(name.to_string())
+            }
+            Some(_) => InputStatus::SelectedUnavailable,
+            None if devices.is_empty() => InputStatus::NoDevice,
+            None if default_muted => InputStatus::Muted,
+            None => InputStatus::Ready(gettext("Default microphone")),
+        };
+        apply_input_status(&controls, status);
+    });
 }
 
 fn apply_input_status(controls: &InputControls, status: InputStatus) {
@@ -1029,9 +1096,13 @@ fn apply_view_mode(flow: &gtk::FlowBox, rows: &RecordingRows, grid: bool) {
 }
 
 fn install_window_actions(window: &adw::ApplicationWindow) {
+    // Actions are owned by the window, so they hold it weakly to avoid a cycle.
     let about_action = gtk::gio::SimpleAction::new("about", None);
-    let window_clone = window.clone();
+    let window_weak = window.downgrade();
     about_action.connect_activate(move |_, _| {
+        let Some(window) = window_weak.upgrade() else {
+            return;
+        };
         let dialog = adw::AboutDialog::builder()
             .application_name("Big Recorder")
             .application_icon(crate::app::APP_ID)
@@ -1042,14 +1113,16 @@ fn install_window_actions(window: &adw::ApplicationWindow) {
             ))
             .license_type(gtk::License::MitX11)
             .build();
-        dialog.present(Some(&window_clone));
+        dialog.present(Some(&window));
     });
     window.add_action(&about_action);
 
     let close_action = gtk::gio::SimpleAction::new("close", None);
-    let window_clone = window.clone();
+    let window_weak = window.downgrade();
     close_action.connect_activate(move |_, _| {
-        window_clone.close();
+        if let Some(window) = window_weak.upgrade() {
+            window.close();
+        }
     });
     window.add_action(&close_action);
 }
@@ -1062,67 +1135,6 @@ fn connect_controls(
     recording_rows: RecordingRows,
     tool_context: ToolContext,
 ) {
-    let timer_session = Rc::clone(&session);
-    let timer_label_clone = widgets.timer_label.clone();
-    glib::timeout_add_seconds_local(1, move || {
-        timer_label_clone.set_label(&format_duration(timer_session.borrow().elapsed()));
-        glib::ControlFlow::Continue
-    });
-
-    let monitor_recorder = Rc::clone(&recorder);
-    let monitor_session = Rc::clone(&session);
-    let monitor_waveform = widgets.waveform.clone();
-    glib::timeout_add_local(Duration::from_millis(50), move || {
-        let mode = monitor_session.borrow().mode;
-        monitor_waveform.set_active(mode == RecordingMode::Recording);
-
-        if mode == RecordingMode::Recording {
-            match monitor_recorder.borrow_mut().poll_frame() {
-                Ok(Some(frame)) => {
-                    monitor_waveform.set_level(frame.level);
-                    monitor_waveform.set_peaks(frame.peaks);
-                }
-                Ok(None) => {}
-                Err(err) => eprintln!("Failed to read audio level: {err}"),
-            }
-        }
-
-        glib::ControlFlow::Continue
-    });
-
-    let playback_player = Rc::clone(&player);
-    let playback_rows = Rc::clone(&recording_rows);
-    glib::timeout_add_local(Duration::from_millis(16), move || {
-        let poll_result = {
-            let mut player = playback_player.borrow_mut();
-            player.poll_finished()
-        };
-
-        match poll_result {
-            Ok(true) => refresh_playback_rows(&playback_rows, None),
-            Ok(false) => {
-                let status = playback_player.borrow().status();
-                refresh_playback_rows(&playback_rows, status.as_ref());
-            }
-            Err(err) => {
-                eprintln!("Failed to play recording: {err}");
-                refresh_playback_rows(&playback_rows, None);
-            }
-        }
-
-        glib::ControlFlow::Continue
-    });
-
-    let input_controls = widgets.input_controls.clone();
-    let input_session = Rc::clone(&session);
-    glib::timeout_add_seconds_local(2, move || {
-        if input_session.borrow().mode == RecordingMode::Idle {
-            refresh_input_controls(&input_controls);
-        }
-
-        glib::ControlFlow::Continue
-    });
-
     let mode_controls = ModeControls {
         page_stack: widgets.page_stack.clone(),
         start_button: widgets.start_button.clone(),
@@ -1134,6 +1146,100 @@ fn connect_controls(
         stop_button: widgets.stop_button.clone(),
         status_label: widgets.status_label.clone(),
     };
+    let recording_controls = RecordingControls {
+        recorder: Rc::clone(&recorder),
+        session: Rc::clone(&session),
+        timer_label: widgets.timer_label.clone(),
+        mode_controls: mode_controls.clone(),
+        tool_context: tool_context.clone(),
+    };
+
+    let mut sources = Vec::new();
+
+    let timer_session = Rc::clone(&session);
+    let timer_label_clone = widgets.timer_label.clone();
+    sources.push(glib::timeout_add_seconds_local(1, move || {
+        if timer_session.borrow().mode != RecordingMode::Idle {
+            timer_label_clone.set_label(&format_duration(timer_session.borrow().elapsed()));
+        }
+        glib::ControlFlow::Continue
+    }));
+
+    let monitor_controls = recording_controls.clone();
+    let monitor_waveform = widgets.waveform.clone();
+    let monitor_window = widgets.window.clone();
+    sources.push(glib::timeout_add_local(
+        Duration::from_millis(50),
+        move || {
+            let mode = monitor_controls.session.borrow().mode;
+            monitor_waveform.set_active(mode == RecordingMode::Recording);
+
+            if mode == RecordingMode::Recording {
+                // Bind the result first so the recorder borrow ends before a
+                // failure path needs to borrow it again.
+                let frame = monitor_controls.recorder.borrow_mut().poll_frame();
+                match frame {
+                    Ok(Some(frame)) => {
+                        monitor_waveform.set_level(frame.level);
+                        monitor_waveform.set_peaks(frame.peaks);
+                    }
+                    Ok(None) => {}
+                    Err(err) => {
+                        // The source died (e.g. the microphone was unplugged):
+                        // keep what was captured and tell the user.
+                        let _ = finish_recording(&monitor_controls, None);
+                        show_error(
+                            &monitor_window,
+                            &gettext("Recording stopped unexpectedly"),
+                            &err,
+                        );
+                    }
+                }
+            }
+
+            glib::ControlFlow::Continue
+        },
+    ));
+
+    let input_controls = widgets.input_controls.clone();
+    let input_session = Rc::clone(&session);
+    sources.push(glib::timeout_add_seconds_local(2, move || {
+        if input_session.borrow().mode == RecordingMode::Idle {
+            refresh_input_controls(&input_controls, false);
+        }
+
+        glib::ControlFlow::Continue
+    }));
+
+    let monitor = watch_recordings_directory(&tool_context, Rc::clone(&session));
+
+    let sources = RefCell::new(sources);
+    let destroy_ticker = Rc::clone(&tool_context.playback_ticker);
+    widgets.window.connect_destroy(move |_| {
+        for source in sources.take() {
+            source.remove();
+        }
+        if let Some(source) = destroy_ticker.take() {
+            source.remove();
+        }
+        if let Some(monitor) = &monitor {
+            monitor.cancel();
+        }
+    });
+
+    // Closing mid-recording must still finalize the WAV header, otherwise the
+    // file is left unreadable.
+    let close_controls = recording_controls.clone();
+    let close_player = Rc::clone(&player);
+    widgets.window.connect_close_request(move |_| {
+        if close_controls.session.borrow().mode != RecordingMode::Idle
+            && let Err(err) = finish_recording(&close_controls, None)
+        {
+            eprintln!("Failed to finish recording on close: {err}");
+        }
+        let _ = close_player.borrow_mut().stop();
+        glib::Propagation::Proceed
+    });
 
     let window_clone = widgets.window.clone();
     let mode_controls_clone = mode_controls.clone();
@@ -1149,7 +1255,8 @@ fn connect_controls(
             return;
         }
 
-        refresh_input_controls(&input_controls_clone);
+        // The input state is kept current by the background refresh; probing
+        // it here again would block the click on the sound server.
         if !input_controls_clone.input_ready.get() {
             let (heading, body) = match input_controls_clone.block_reason.get() {
                 InputBlockReason::Muted => (
@@ -1170,6 +1277,7 @@ fn connect_controls(
                 ),
             };
             show_message(&window_clone, &heading, &body, MessageKind::Error);
+            refresh_input_controls(&input_controls_clone, true);
             return;
         }
 
@@ -1179,7 +1287,8 @@ fn connect_controls(
         }
         refresh_playback_rows(&recording_rows_clone, None);
 
-        match recorder_clone.borrow_mut().start() {
+        let started = recorder_clone.borrow_mut().start();
+        match started {
             Ok(path) => {
                 session_clone.borrow_mut().start(path);
                 apply_mode(RecordingMode::Recording, &mode_controls_clone);
@@ -1221,31 +1330,98 @@ fn connect_controls(
     });
 
     let window_clone = widgets.window.clone();
-    let mode_controls_clone = mode_controls.clone();
-    let timer_label_clone = widgets.timer_label.clone();
-    let recorder_clone = Rc::clone(&recorder);
-    let session_clone = Rc::clone(&session);
-    let tool_context_clone = tool_context.clone();
-
+    let stop_controls = recording_controls.clone();
     widgets.stop_button.connect_clicked(move |_| {
-        let final_duration = session_clone.borrow().elapsed();
-
-        match recorder_clone.borrow_mut().stop() {
-            Ok(Some(path)) => {
-                session_clone.borrow_mut().stop();
-                timer_label_clone.set_label(&format_duration(final_duration));
-                apply_mode(RecordingMode::Idle, &mode_controls_clone);
-                append_recording_row(&tool_context_clone, path, Some(final_duration), true);
-            }
-            Ok(None) => {}
-            Err(err) => {
-                session_clone.borrow_mut().stop();
-                timer_label_clone.set_label(&format_duration(final_duration));
-                apply_mode(RecordingMode::Idle, &mode_controls_clone);
-                show_error(&window_clone, &gettext("Could not finish recording"), &err);
-            }
+        let final_duration = stop_controls.session.borrow().elapsed();
+        if let Err(err) = finish_recording(&stop_controls, Some(final_duration)) {
+            show_error(&window_clone, &gettext("Could not finish recording"), &err);
         }
     });
+}
+
+/// Stops the active recording, resets the recording page and adds the saved
+/// file to the list. `known_duration` is used when the session timer is
+/// trustworthy; otherwise the duration is read back from the file.
+fn finish_recording(
+    controls: &RecordingControls,
+    known_duration: Option<Duration>,
+) -> anyhow::Result<()> {
+    let final_duration = controls.session.borrow().elapsed();
+    let stopped = controls.recorder.borrow_mut().stop();
+
+    controls.session.borrow_mut().stop();
+    controls
+        .timer_label
+        .set_label(&format_duration(final_duration));
+    apply_mode(RecordingMode::Idle, &controls.mode_controls);
+
+    let path = stopped?;
+    if let Some(path) = path {
+        append_recording_row(&controls.tool_context, path, known_duration, true);
+    }
+    Ok(())
+}
+
+/// Keeps the list in sync with files added, removed or renamed outside the
+/// app. The returned monitor must be kept alive for events to arrive.
+fn watch_recordings_directory(
+    context: &ToolContext,
+    session: Rc<RefCell<Session>>,
+) -> Option<gio::FileMonitor> {
+    let directory = crate::audio::recorder::recordings_directory();
+    let _ = std::fs::create_dir_all(&directory);
+    let monitor = gio::File::for_path(&directory)
+        .monitor_directory(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
+        .map_err(|err| eprintln!("Failed to watch recordings folder: {err}"))
+        .ok()?;
+
+    let context = context.clone();
+    monitor.connect_changed(move |_, file, other_file, event| {
+        let add = |file: &gio::File| {
+            let Some(path) = file.path() else {
+                return;
+            };
+            let session = session.borrow();
+            let in_progress = session.mode != RecordingMode::Idle
+                && session.current_path.as_deref() == Some(path.as_path());
+            if !in_progress && is_listed_recording_file(&path) {
+                drop(session);
+                append_recording_row(&context, path, None, false);
+            }
+        };
+        let remove = |file: &gio::File| {
+            if let Some(path) = file.path() {
+                remove_recording_row(&context, &path);
+            }
+        };
+
+        match event {
+            gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => remove(file),
+            gio::FileMonitorEvent::ChangesDoneHint | gio::FileMonitorEvent::MovedIn => add(file),
+            gio::FileMonitorEvent::Renamed => {
+                remove(file);
+                if let Some(other_file) = other_file {
+                    add(other_file);
+                }
+            }
+            _ => {}
+        }
+    });
+
+    Some(monitor)
+}
+
+/// Visible WAV files only: temporary outputs are written as hidden files.
+fn is_listed_recording_file(path: &Path) -> bool {
+    let visible = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .is_some_and(|name| !name.starts_with('.'));
+    let is_wav = path
+        .extension()
+        .and_then(|extension| extension.to_str())
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("wav"));
+    visible && is_wav && path.is_file()
 }
 
 fn apply_mode(mode: RecordingMode, controls: &ModeControls) {
@@ -1318,32 +1494,20 @@ fn load_saved_recordings(context: &ToolContext) {
     update_count(context);
 }
 
-fn reload_recordings(context: &ToolContext) {
-    let _ = context.player.borrow_mut().stop();
-    // Take the rows out before touching the flow box so callbacks fired during
-    // removal never re-enter a held borrow.
-    let rows = std::mem::take(&mut *context.recording_rows.borrow_mut());
-    for row in rows {
-        context.recordings_flow.remove(&row.child);
-    }
-    context.selected_recording.replace(None);
-    load_saved_recordings(context);
-}
-
 fn update_count(context: &ToolContext) {
     let count = context.recording_rows.borrow().len();
     let has_rows = count > 0;
     context.empty_recordings_label.set_visible(!has_rows);
     context.recordings_flow.set_visible(has_rows);
 
-    let text = if count == 1 {
-        gettext("1 recording")
-    } else {
-        format_message(
-            &gettext("{count} recordings"),
-            &[("{count}", &count.to_string())],
-        )
-    };
+    let text = format_message(
+        &ngettext(
+            "{count} recording",
+            "{count} recordings",
+            u32::try_from(count).unwrap_or(u32::MAX),
+        ),
+        &[("{count}", &count.to_string())],
+    );
     context.count_label.set_label(&text);
 }
 
@@ -1353,8 +1517,22 @@ fn append_recording_row(
     duration: Option<Duration>,
     auto_select: bool,
 ) {
+    // The folder monitor and the app itself can both report the same file.
+    let already_listed = context
+        .recording_rows
+        .borrow()
+        .iter()
+        .any(|row| row.path == path);
+    if already_listed {
+        if auto_select {
+            select_recording(&context.recording_rows, &context.selected_recording, &path);
+        }
+        return;
+    }
+
     let title_text = recording_title(&path);
-    let duration = duration.or_else(|| recording_duration(&path));
+    let duration = duration.or_else(|| processing::duration(&path).ok());
+    let path_cell = Rc::new(RefCell::new(path.clone()));
     let grid = context.recordings_flow.has_css_class("grid-view");
 
     let row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
@@ -1435,7 +1613,7 @@ fn append_recording_row(
     delete_button.add_css_class("row-delete-button");
     delete_button.set_child(Some(&delete_icon));
 
-    let menu_button = build_row_menu(context, &path);
+    let menu_button = build_row_menu(context, &path_cell);
 
     let actions = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     actions.set_valign(gtk::Align::Center);
@@ -1457,7 +1635,9 @@ fn append_recording_row(
         child: child.clone(),
         row_widget: row.clone(),
         path: path.clone(),
+        path_cell: Rc::clone(&path_cell),
         title_text,
+        title_label: title.clone(),
         playback_symbol: playback_symbol.clone(),
         playback_bar: playback_bar.clone(),
         waveform_holder: waveform_holder.upcast::<gtk::Widget>(),
@@ -1470,42 +1650,50 @@ fn append_recording_row(
 
     let select_rows = Rc::clone(&context.recording_rows);
     let select_recording_ref = Rc::clone(&context.selected_recording);
-    let select_path = path.clone();
+    let select_path = Rc::clone(&path_cell);
     let gesture = gtk::GestureClick::new();
     gesture.connect_pressed(move |_, _, _, _| {
-        select_recording(&select_rows, &select_recording_ref, &select_path);
+        let path = select_path.borrow().clone();
+        select_recording(&select_rows, &select_recording_ref, &path);
     });
     row.add_controller(gesture);
 
     let delete_context = context.clone();
-    let delete_path = path.clone();
+    let delete_path = Rc::clone(&path_cell);
     delete_button.connect_clicked(move |_| {
+        let path = delete_path.borrow().clone();
         select_recording(
             &delete_context.recording_rows,
             &delete_context.selected_recording,
-            &delete_path,
+            &path,
         );
-        confirm_trash_recording(&delete_context, delete_path.clone());
+        confirm_trash_recording(&delete_context, path);
     });
 
-    let player_clone = Rc::clone(&context.player);
-    let recording_rows_clone = Rc::clone(&context.recording_rows);
-    let selected_recording_clone = Rc::clone(&context.selected_recording);
-    let window_clone = context.window.clone();
-    let play_path = path.clone();
+    let play_context = context.clone();
+    let play_path = Rc::clone(&path_cell);
     play_button.connect_clicked(move |_| {
-        select_recording(&recording_rows_clone, &selected_recording_clone, &play_path);
-        let result = {
-            let mut player = player_clone.borrow_mut();
-            player.toggle(&play_path)
-        };
+        let path = play_path.borrow().clone();
+        select_recording(
+            &play_context.recording_rows,
+            &play_context.selected_recording,
+            &path,
+        );
+        let result = play_context.player.borrow_mut().toggle(&path);
 
         match result {
             Ok(()) => {
-                let status = player_clone.borrow().status();
-                refresh_playback_rows(&recording_rows_clone, status.as_ref());
+                let status = play_context.player.borrow().status();
+                refresh_playback_rows(&play_context.recording_rows, status.as_ref());
+                if status.is_some() {
+                    ensure_playback_ticker(&play_context);
+                }
             }
-            Err(err) => show_error(&window_clone, &gettext("Could not play recording"), &err),
+            Err(err) => show_error(
+                &play_context.window,
+                &gettext("Could not play recording"),
+                &err,
+            ),
         }
     });
 
@@ -1514,6 +1702,42 @@ fn append_recording_row(
     }
 
     update_count(context);
+}
+
+/// Polls the player while something is playing. The ticker stops itself once
+/// playback ends, so nothing runs while the app is idle.
+fn ensure_playback_ticker(context: &ToolContext) {
+    if context.playback_ticker.borrow().is_some() {
+        return;
+    }
+
+    let ticker_context = context.clone();
+    let source = glib::timeout_add_local(Duration::from_millis(33), move || {
+        let polled = ticker_context.player.borrow_mut().poll_finished();
+        let status = match polled {
+            Ok(true) => None,
+            Ok(false) => ticker_context.player.borrow().status(),
+            Err(err) => {
+                let _ = ticker_context.player.borrow_mut().stop();
+                show_error(
+                    &ticker_context.window,
+                    &gettext("Could not play recording"),
+                    &err,
+                );
+                None
+            }
+        };
+        refresh_playback_rows(&ticker_context.recording_rows, status.as_ref());
+
+        if status.is_some() {
+            glib::ControlFlow::Continue
+        } else {
+            // Returning Break removes the source; just forget its id.
+            ticker_context.playback_ticker.replace(None);
+            glib::ControlFlow::Break
+        }
+    });
+    context.playback_ticker.replace(Some(source));
 }
 
 fn meta_line(icon_name: &str, text: &str) -> gtk::Box {
@@ -1533,7 +1757,7 @@ fn meta_line(icon_name: &str, text: &str) -> gtk::Box {
     line
 }
 
-fn build_row_menu(context: &ToolContext, path: &Path) -> gtk::MenuButton {
+fn build_row_menu(context: &ToolContext, path: &Rc<RefCell<PathBuf>>) -> gtk::MenuButton {
     let menu_button = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
         .tooltip_text(gettext("More options"))
@@ -1567,11 +1791,12 @@ fn build_row_menu(context: &ToolContext, path: &Path) -> gtk::MenuButton {
     for (icon, label, action) in items {
         let button = popover_menu_item(icon, &label, matches!(action, RowMenuAction::Trash));
         let item_context = context.clone();
-        let item_path = path.to_path_buf();
+        let item_path = Rc::clone(path);
         let popover_clone = popover.clone();
         button.connect_clicked(move |_| {
             popover_clone.popdown();
-            run_row_menu_action(action, &item_context, &item_path);
+            let path = item_path.borrow().clone();
+            run_row_menu_action(action, &item_context, &path);
         });
         menu_box.append(&button);
     }
@@ -1677,9 +1902,33 @@ fn rename_recording(context: &ToolContext, path: &Path, new_name: &str) {
         return;
     }
 
+    // Release the file before renaming it if it is the one being played.
+    if context
+        .player
+        .borrow()
+        .status()
+        .is_some_and(|status| status.path == path)
+    {
+        let _ = context.player.borrow_mut().stop();
+        refresh_playback_rows(&context.recording_rows, None);
+    }
+
     match std::fs::rename(path, &target) {
         Ok(()) => {
-            reload_recordings(context);
+            // Update the existing row instead of rebuilding the whole list.
+            let title_text = recording_title(&target);
+            if let Some(row) = context
+                .recording_rows
+                .borrow_mut()
+                .iter_mut()
+                .find(|row| row.path == path)
+            {
+                row.path = target.clone();
+                row.path_cell.replace(target.clone());
+                row.title_label.set_label(&title_text);
+                row.title_text = title_text;
+            }
+            context.recordings_flow.invalidate_filter();
             select_recording(
                 &context.recording_rows,
                 &context.selected_recording,
@@ -1725,20 +1974,24 @@ fn trash_recording(context: &ToolContext, path: &Path) {
     }
     refresh_playback_rows(&context.recording_rows, None);
 
-    match move_recording_to_trash(path) {
-        Ok(()) => remove_recording_row(context, path),
-        Err(err) => show_error(
-            &context.window,
-            &gettext("Could not move recording to trash"),
-            &err,
-        ),
-    }
-}
-
-fn move_recording_to_trash(path: &Path) -> anyhow::Result<()> {
-    let file = gio::File::for_path(path);
-    file.trash(gio::Cancellable::NONE)
-        .with_context(|| format!("Failed to move recording to trash: {}", path.display()))
+    // Trashing can mean copying across filesystems, so keep it off the
+    // main thread.
+    let action_context = context.clone();
+    let path = path.to_path_buf();
+    glib::MainContext::default().spawn_local(async move {
+        let result = gio::File::for_path(&path)
+            .trash_future(glib::Priority::DEFAULT)
+            .await
+            .with_context(|| format!("Failed to move recording to trash: {}", path.display()));
+        match result {
+            Ok(()) => remove_recording_row(&action_context, &path),
+            Err(err) => show_error(
+                &action_context.window,
+                &gettext("Could not move recording to trash"),
+                &err,
+            ),
+        }
+    });
 }
 
 fn remove_recording_row(context: &ToolContext, path: &Path) {
@@ -1973,7 +2226,33 @@ fn format_trim_duration(total_seconds: f64) -> String {
     let total = total_seconds.max(0.0);
     let minutes = (total / 60.0).floor() as u64;
     let seconds = total - (minutes as f64) * 60.0;
-    format!("{minutes:02}:{seconds:05.2}").replace('.', ",")
+    let seconds = localize_decimal(&format!("{seconds:05.2}"));
+    format!("{minutes:02}:{seconds}")
+}
+
+/// Swaps the '.' produced by Rust formatting for the locale's decimal mark.
+fn localize_decimal(formatted: &str) -> String {
+    formatted.replace('.', decimal_separator())
+}
+
+fn decimal_separator() -> &'static str {
+    static SEPARATOR: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    SEPARATOR.get_or_init(|| {
+        // SAFETY: GTK already called setlocale(); localeconv() returns a
+        // pointer to static storage that is copied out immediately.
+        unsafe {
+            let conventions = libc::localeconv();
+            if conventions.is_null() || (*conventions).decimal_point.is_null() {
+                return ".".to_string();
+            }
+            std::ffi::CStr::from_ptr((*conventions).decimal_point)
+                .to_str()
+                .ok()
+                .filter(|separator| !separator.is_empty())
+                .unwrap_or(".")
+                .to_string()
+        }
+    })
 }
 
 fn show_volume_dialog(context: &ToolContext) {
@@ -2081,13 +2360,16 @@ fn show_voice_effects_dialog(context: &ToolContext) {
         return;
     };
 
-    let effect_combo = gtk::ComboBoxText::new();
-    effect_combo.append_text(&gettext("Child voice"));
-    effect_combo.append_text(&gettext("Deep voice"));
-    effect_combo.append_text(&gettext("Robot voice"));
-    effect_combo.append_text(&gettext("Radio voice"));
-    effect_combo.append_text(&gettext("Echo voice"));
-    effect_combo.set_active(Some(0));
+    let effect_combo = choice_dropdown(
+        &[
+            gettext("Child voice"),
+            gettext("Deep voice"),
+            gettext("Robot voice"),
+            gettext("Radio voice"),
+            gettext("Echo voice"),
+        ],
+        0,
+    );
 
     let (amount_control, amount_adjustment) =
         horizontal_value_control(0.0, 100.0, 5.0, 0, 70.0, "%");
@@ -2212,11 +2494,11 @@ fn show_merge_dialog(context: &ToolContext) {
         return;
     }
 
-    let combo = gtk::ComboBoxText::new();
-    for option in &options {
-        combo.append_text(&recording_title(option));
-    }
-    combo.set_active(Some(0));
+    let titles: Vec<String> = options
+        .iter()
+        .map(|option| recording_title(option))
+        .collect();
+    let combo = choice_dropdown(&titles, 0);
     let content = tool_content_with_illustration(
         ToolIllustration::Merge,
         &[(&gettext("Append recording"), &combo)],
@@ -2234,7 +2516,7 @@ fn show_merge_dialog(context: &ToolContext) {
             return;
         }
 
-        let index = combo.active().unwrap_or(0) as usize;
+        let index = combo.selected() as usize;
         let path = path.clone();
         let second_path = options.get(index).cloned();
         run_processed_task(
@@ -2255,32 +2537,33 @@ fn export_selected_recording(context: &ToolContext) {
         return;
     };
 
-    let format_combo = gtk::ComboBoxText::new();
-    format_combo.append_text(&gettext("MP3 audio (.mp3)"));
-    format_combo.append_text(&gettext("WAV audio (.wav)"));
-    format_combo.append_text(&gettext("Opus audio (.opus)"));
-    format_combo.append_text(&gettext("FLAC audio (.flac)"));
-    format_combo.set_active(Some(0));
+    let format_combo = choice_dropdown(
+        &[
+            gettext("MP3 audio (.mp3)"),
+            gettext("WAV audio (.wav)"),
+            gettext("Opus audio (.opus)"),
+            gettext("FLAC audio (.flac)"),
+        ],
+        0,
+    );
 
-    let quality_combo = gtk::ComboBoxText::new();
-    quality_combo.append_text(&gettext("Low"));
-    quality_combo.append_text(&gettext("Medium"));
-    quality_combo.append_text(&gettext("High"));
-    quality_combo.set_active(Some(1));
+    let quality_combo = choice_dropdown(&[gettext("Low"), gettext("Medium"), gettext("High")], 1);
 
-    let channel_combo = gtk::ComboBoxText::new();
-    channel_combo.append_text(&gettext("Original"));
-    channel_combo.append_text(&gettext("Mono"));
-    channel_combo.append_text(&gettext("Stereo"));
-    channel_combo.set_active(Some(1));
+    let channel_combo = choice_dropdown(
+        &[gettext("Original"), gettext("Mono"), gettext("Stereo")],
+        1,
+    );
 
-    let sample_rate_combo = gtk::ComboBoxText::new();
-    sample_rate_combo.append_text(&gettext("Original"));
-    sample_rate_combo.append_text(&gettext("48 kHz"));
-    sample_rate_combo.append_text(&gettext("44.1 kHz"));
-    sample_rate_combo.append_text(&gettext("24 kHz"));
-    sample_rate_combo.append_text(&gettext("16 kHz"));
-    sample_rate_combo.set_active(Some(0));
+    let sample_rate_combo = choice_dropdown(
+        &[
+            gettext("Original"),
+            gettext("48 kHz"),
+            gettext("44.1 kHz"),
+            gettext("24 kHz"),
+            gettext("16 kHz"),
+        ],
+        0,
+    );
 
     let content = tool_content_with_illustration(
         ToolIllustration::Export,
@@ -2302,7 +2585,7 @@ fn export_selected_recording(context: &ToolContext) {
     dialog.set_close_response("cancel");
     dialog.set_response_appearance("apply", adw::ResponseAppearance::Suggested);
 
-    let window = context.window.clone();
+    let export_context = context.clone();
     dialog.connect_response(None, move |_, response| {
         if response != "apply" {
             return;
@@ -2314,12 +2597,12 @@ fn export_selected_recording(context: &ToolContext) {
             channel_mode: export_channel_from_combo(&channel_combo),
             sample_rate: export_sample_rate_from_combo(&sample_rate_combo),
         };
-        show_export_file_dialog(&window, path.clone(), options);
+        show_export_file_dialog(&export_context, path.clone(), options);
     });
     dialog.present(Some(&context.window));
 }
 
-fn show_export_file_dialog(window: &adw::ApplicationWindow, path: PathBuf, options: ExportOptions) {
+fn show_export_file_dialog(context: &ToolContext, path: PathBuf, options: ExportOptions) {
     let filter = gtk::FileFilter::new();
     filter.set_name(Some(&export_filter_name(options.format)));
     filter.add_pattern(&format!("*.{}", options.format.extension()));
@@ -2338,40 +2621,45 @@ fn show_export_file_dialog(window: &adw::ApplicationWindow, path: PathBuf, optio
         .modal(true)
         .build();
 
-    let parent = window.clone();
-    dialog.save(Some(window), gio::Cancellable::NONE, move |result| {
-        let file = match result {
-            Ok(file) => file,
-            Err(err)
-                if err.matches(gtk::DialogError::Dismissed)
-                    || err.matches(gtk::DialogError::Cancelled) =>
-            {
-                return;
-            }
-            Err(err) => {
+    let export_context = context.clone();
+    let parent = context.window.clone();
+    dialog.save(
+        Some(&context.window),
+        gio::Cancellable::NONE,
+        move |result| {
+            let file = match result {
+                Ok(file) => file,
+                Err(err)
+                    if err.matches(gtk::DialogError::Dismissed)
+                        || err.matches(gtk::DialogError::Cancelled) =>
+                {
+                    return;
+                }
+                Err(err) => {
+                    show_notice(
+                        &parent,
+                        &gettext("Could not export recording"),
+                        err.message(),
+                    );
+                    return;
+                }
+            };
+            let Some(destination) = file.path() else {
                 show_notice(
                     &parent,
                     &gettext("Could not export recording"),
-                    err.message(),
+                    &gettext("The selected destination is not a local file."),
                 );
                 return;
-            }
-        };
-        let Some(destination) = file.path() else {
-            show_notice(
-                &parent,
-                &gettext("Could not export recording"),
-                &gettext("The selected destination is not a local file."),
-            );
-            return;
-        };
-        let destination = destination_with_extension(&destination, options.format);
-        run_export_task(&parent, path, destination, options);
-    });
+            };
+            let destination = destination_with_extension(&destination, options.format);
+            run_export_task(&export_context, path, destination, options);
+        },
+    );
 }
 
-fn export_format_from_combo(combo: &gtk::ComboBoxText) -> ExportFormat {
-    match combo.active().unwrap_or(0) {
+fn export_format_from_combo(combo: &gtk::DropDown) -> ExportFormat {
+    match combo.selected() {
         1 => ExportFormat::Wav,
         2 => ExportFormat::OggOpus,
         3 => ExportFormat::Flac,
@@ -2379,24 +2667,24 @@ fn export_format_from_combo(combo: &gtk::ComboBoxText) -> ExportFormat {
     }
 }
 
-fn export_quality_from_combo(combo: &gtk::ComboBoxText) -> ExportQuality {
-    match combo.active().unwrap_or(1) {
+fn export_quality_from_combo(combo: &gtk::DropDown) -> ExportQuality {
+    match combo.selected() {
         0 => ExportQuality::Low,
         2 => ExportQuality::High,
         _ => ExportQuality::Medium,
     }
 }
 
-fn export_channel_from_combo(combo: &gtk::ComboBoxText) -> ExportChannelMode {
-    match combo.active().unwrap_or(1) {
+fn export_channel_from_combo(combo: &gtk::DropDown) -> ExportChannelMode {
+    match combo.selected() {
         0 => ExportChannelMode::Original,
         2 => ExportChannelMode::Stereo,
         _ => ExportChannelMode::Mono,
     }
 }
 
-fn export_sample_rate_from_combo(combo: &gtk::ComboBoxText) -> ExportSampleRate {
-    match combo.active().unwrap_or(0) {
+fn export_sample_rate_from_combo(combo: &gtk::DropDown) -> ExportSampleRate {
+    match combo.selected() {
         1 => ExportSampleRate::Hz(48_000),
         2 => ExportSampleRate::Hz(44_100),
         3 => ExportSampleRate::Hz(24_000),
@@ -2430,8 +2718,8 @@ fn export_filter_name(format: ExportFormat) -> String {
     }
 }
 
-fn voice_effect_from_combo(combo: &gtk::ComboBoxText) -> VoiceEffectPreset {
-    match combo.active().unwrap_or(0) {
+fn voice_effect_from_combo(combo: &gtk::DropDown) -> VoiceEffectPreset {
+    match combo.selected() {
         1 => VoiceEffectPreset::Deep,
         2 => VoiceEffectPreset::Robot,
         3 => VoiceEffectPreset::Radio,
@@ -2447,13 +2735,16 @@ fn equalizer_dialog_content(adjustments: &[gtk::Adjustment]) -> gtk::Box {
     let graph = equalizer_curve(adjustments);
     content.append(&graph);
 
-    let preset_combo = gtk::ComboBoxText::new();
-    preset_combo.append_text(&gettext("Flat"));
-    preset_combo.append_text(&gettext("Voice clarity"));
-    preset_combo.append_text(&gettext("Warm"));
-    preset_combo.append_text(&gettext("Bright"));
-    preset_combo.append_text(&gettext("Bass cut"));
-    preset_combo.set_active(Some(0));
+    let preset_combo = choice_dropdown(
+        &[
+            gettext("Flat"),
+            gettext("Voice clarity"),
+            gettext("Warm"),
+            gettext("Bright"),
+            gettext("Bass cut"),
+        ],
+        0,
+    );
     content.append(&tool_row(&gettext("Preset"), &preset_combo));
 
     let band_box = gtk::Box::new(gtk::Orientation::Horizontal, 8);
@@ -2491,8 +2782,8 @@ fn equalizer_dialog_content(adjustments: &[gtk::Adjustment]) -> gtk::Box {
 
     let preset_adjustments = adjustments.to_vec();
     let graph_clone = graph.clone();
-    preset_combo.connect_changed(move |combo| {
-        let gains = equalizer_preset_gains(combo.active().unwrap_or(0));
+    preset_combo.connect_selected_notify(move |combo| {
+        let gains = equalizer_preset_gains(combo.selected());
         for (adjustment, gain) in preset_adjustments.iter().zip(gains) {
             adjustment.set_value(f64::from(gain));
         }
@@ -2581,12 +2872,6 @@ fn finish_processed_recording(
     result: anyhow::Result<PathBuf>,
     error_heading: &str,
 ) {
-    if let Err(err) = context.player.borrow_mut().stop() {
-        show_error(&context.window, &gettext("Could not stop playback"), &err);
-        return;
-    }
-    refresh_playback_rows(&context.recording_rows, None);
-
     match result {
         Ok(path) => {
             let duration = processing::duration(&path).ok();
@@ -2596,11 +2881,28 @@ fn finish_processed_recording(
     }
 }
 
+/// Marks the context busy, or tells the user another task is still running.
+fn try_begin_task(context: &ToolContext) -> bool {
+    if context.busy.replace(true) {
+        show_notice(
+            &context.window,
+            &gettext("Please wait"),
+            &gettext("Another operation is still running."),
+        );
+        return false;
+    }
+    true
+}
+
 fn run_processed_task<F>(context: &ToolContext, error_heading: String, task: F)
 where
     F: FnOnce() -> anyhow::Result<PathBuf> + Send + 'static,
 {
+    if !try_begin_task(context) {
+        return;
+    }
     if let Err(err) = context.player.borrow_mut().stop() {
+        context.busy.set(false);
         show_error(&context.window, &gettext("Could not stop playback"), &err);
         return;
     }
@@ -2609,7 +2911,9 @@ where
     let action_context = context.clone();
     let handle = gtk::gio::spawn_blocking(task);
     glib::MainContext::default().spawn_local(async move {
-        match handle.await {
+        let result = handle.await;
+        action_context.busy.set(false);
+        match result {
             Ok(result) => finish_processed_recording(&action_context, result, &error_heading),
             Err(_) => show_notice(
                 &action_context.window,
@@ -2621,15 +2925,21 @@ where
 }
 
 fn run_export_task(
-    window: &adw::ApplicationWindow,
+    context: &ToolContext,
     path: PathBuf,
     destination: PathBuf,
     options: ExportOptions,
 ) {
-    let window = window.clone();
+    if !try_begin_task(context) {
+        return;
+    }
+    let busy = Rc::clone(&context.busy);
+    let window = context.window.clone();
     let handle = gtk::gio::spawn_blocking(move || processing::export(&path, &destination, options));
     glib::MainContext::default().spawn_local(async move {
-        match handle.await {
+        let result = handle.await;
+        busy.set(false);
+        match result {
             Ok(Ok(())) => show_success(
                 &window,
                 &gettext("Recording exported"),
@@ -2733,7 +3043,8 @@ fn slider_value_text(value: f64, digits: u32, suffix: &str) -> String {
     if digits == 0 {
         format!("{value:.0}{suffix}")
     } else {
-        format!("{value:.precision$}{suffix}", precision = digits as usize)
+        let value = localize_decimal(&format!("{value:.precision$}", precision = digits as usize));
+        format!("{value}{suffix}")
     }
 }
 
@@ -2744,8 +3055,9 @@ fn tool_illustration(kind: ToolIllustration) -> gtk::DrawingArea {
         .halign(gtk::Align::Center)
         .build();
     area.add_css_class("tool-illustration");
-    area.set_draw_func(move |_, cr, width, height| {
-        draw_tool_illustration(cr, width, height, kind);
+    area.set_draw_func(move |widget, cr, width, height| {
+        let palette = IllustrationPalette::for_widget(widget);
+        draw_tool_illustration(cr, width, height, kind, &palette);
     });
     area
 }
@@ -2755,6 +3067,7 @@ fn draw_tool_illustration(
     width: i32,
     height: i32,
     kind: ToolIllustration,
+    palette: &IllustrationPalette,
 ) {
     let _ = cr.save();
     cr.set_line_cap(gtk::cairo::LineCap::Round);
@@ -2763,29 +3076,56 @@ fn draw_tool_illustration(
 
     let w = f64::from(width).max(1.0);
     let h = f64::from(height).max(1.0);
-    draw_panel_grid(cr, (w, h));
+    draw_panel_grid(cr, (w, h), palette);
 
     let drawing_width = 124.0;
     let _ = cr.save();
     cr.translate(((w - drawing_width) / 2.0).max(0.0), 0.0);
     match kind {
-        ToolIllustration::Trim => draw_trim_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Volume => draw_volume_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Speed => draw_speed_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Pitch => draw_pitch_illustration(cr, (drawing_width, h)),
-        ToolIllustration::VoiceEffects => draw_voice_effects_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Reverse => draw_reverse_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Merge => draw_merge_illustration(cr, (drawing_width, h)),
-        ToolIllustration::Export => draw_export_illustration(cr, (drawing_width, h)),
+        ToolIllustration::Trim => draw_trim_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::Volume => draw_volume_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::Speed => draw_speed_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::Pitch => draw_pitch_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::VoiceEffects => {
+            draw_voice_effects_illustration(cr, (drawing_width, h), palette)
+        }
+        ToolIllustration::Reverse => draw_reverse_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::Merge => draw_merge_illustration(cr, (drawing_width, h), palette),
+        ToolIllustration::Export => draw_export_illustration(cr, (drawing_width, h), palette),
     }
     let _ = cr.restore();
 
     let _ = cr.restore();
 }
 
-fn draw_panel_grid(cr: &gtk::cairo::Context, size: (f64, f64)) {
+/// Illustration colors resolved from the current theme, so the drawings follow
+/// light/dark mode and the user's accent color.
+struct IllustrationPalette {
+    source: (f64, f64, f64, f64),
+    result: (f64, f64, f64, f64),
+    arrow: (f64, f64, f64, f64),
+    cut: (f64, f64, f64, f64),
+    grid: (f64, f64, f64, f64),
+}
+
+impl IllustrationPalette {
+    fn for_widget(widget: &impl IsA<gtk::Widget>) -> Self {
+        let fg = css_color(widget, "window_fg_color", (0.85, 0.88, 0.96));
+        let accent = css_color(widget, "accent_color", (0.21, 0.52, 0.89));
+        let destructive = css_color(widget, "destructive_color", (0.88, 0.11, 0.14));
+        Self {
+            source: (fg.0, fg.1, fg.2, 0.55),
+            result: (accent.0, accent.1, accent.2, 0.95),
+            arrow: (fg.0, fg.1, fg.2, 0.8),
+            cut: (destructive.0, destructive.1, destructive.2, 0.95),
+            grid: (fg.0, fg.1, fg.2, 0.12),
+        }
+    }
+}
+
+fn draw_panel_grid(cr: &gtk::cairo::Context, size: (f64, f64), palette: &IllustrationPalette) {
     let (w, h) = size;
-    set_source(cr, (0.25, 0.29, 0.37, 0.38));
+    set_source(cr, palette.grid);
     cr.set_line_width(1.0);
     for line in 1..4 {
         let y = h * f64::from(line) / 4.0;
@@ -2795,85 +3135,105 @@ fn draw_panel_grid(cr: &gtk::cairo::Context, size: (f64, f64)) {
     let _ = cr.stroke();
 }
 
-fn draw_trim_illustration(cr: &gtk::cairo::Context, size: (f64, f64)) {
+fn draw_trim_illustration(
+    cr: &gtk::cairo::Context,
+    size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
     draw_wave(
         cr,
         (13.0, 48.0),
         (98.0, 40.0),
         &[0.25, 0.6, 0.35, 0.85, 0.5, 0.75, 0.3],
         false,
+        palette,
     );
-    draw_cut_line(cr, 40.0, size.1);
-    draw_cut_line(cr, 82.0, size.1);
-    draw_arrow(cr, (48.0, 68.0), (74.0, 68.0), (0.45, 0.33, 1.0, 0.95));
+    draw_cut_line(cr, 40.0, size.1, palette);
+    draw_cut_line(cr, 82.0, size.1, palette);
+    draw_arrow(cr, (48.0, 68.0), (74.0, 68.0), palette.arrow);
 }
 
-fn draw_volume_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
-    draw_bars(
-        cr,
-        16.0,
-        64.0,
-        &[0.18, 0.3, 0.22, 0.28],
-        (0.33, 0.86, 1.0, 0.9),
-    );
-    draw_arrow(cr, (52.0, 52.0), (72.0, 52.0), (0.45, 0.33, 1.0, 0.95));
-    draw_bars(
-        cr,
-        82.0,
-        64.0,
-        &[0.35, 0.7, 0.45, 0.85],
-        (0.71, 0.48, 1.0, 0.95),
-    );
+fn draw_volume_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
+    draw_bars(cr, 16.0, 64.0, &[0.18, 0.3, 0.22, 0.28], palette.source);
+    draw_arrow(cr, (52.0, 52.0), (72.0, 52.0), palette.arrow);
+    draw_bars(cr, 82.0, 64.0, &[0.35, 0.7, 0.45, 0.85], palette.result);
 }
 
-fn draw_speed_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
-    draw_ticks(cr, 14.0, 48.0, 9.0, 6, (0.33, 0.86, 1.0, 0.9));
-    draw_arrow(cr, (50.0, 48.0), (70.0, 48.0), (0.45, 0.33, 1.0, 0.95));
-    draw_ticks(cr, 82.0, 48.0, 4.5, 7, (0.71, 0.48, 1.0, 0.95));
+fn draw_speed_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
+    draw_ticks(cr, 14.0, 48.0, 9.0, 6, palette.source);
+    draw_arrow(cr, (50.0, 48.0), (70.0, 48.0), palette.arrow);
+    draw_ticks(cr, 82.0, 48.0, 4.5, 7, palette.result);
 }
 
-fn draw_pitch_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
-    draw_sine(cr, (14.0, 58.0), (38.0, 18.0), 1.2, (0.33, 0.86, 1.0, 0.9));
-    draw_arrow(cr, (54.0, 48.0), (72.0, 48.0), (0.45, 0.33, 1.0, 0.95));
-    draw_sine(cr, (82.0, 45.0), (34.0, 28.0), 2.3, (0.71, 0.48, 1.0, 0.95));
+fn draw_pitch_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
+    draw_sine(cr, (14.0, 58.0), (38.0, 18.0), 1.2, palette.source);
+    draw_arrow(cr, (54.0, 48.0), (72.0, 48.0), palette.arrow);
+    draw_sine(cr, (82.0, 45.0), (34.0, 28.0), 2.3, palette.result);
 }
 
-fn draw_voice_effects_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
-    draw_sine(cr, (12.0, 58.0), (34.0, 18.0), 1.4, (0.33, 0.86, 1.0, 0.9));
-    draw_arrow(cr, (47.0, 48.0), (64.0, 48.0), (0.45, 0.33, 1.0, 0.95));
-    draw_sine(cr, (72.0, 45.0), (22.0, 28.0), 2.8, (0.71, 0.48, 1.0, 0.95));
-    set_source(cr, (0.33, 0.86, 1.0, 0.82));
+fn draw_voice_effects_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
+    draw_sine(cr, (12.0, 58.0), (34.0, 18.0), 1.4, palette.source);
+    draw_arrow(cr, (47.0, 48.0), (64.0, 48.0), palette.arrow);
+    draw_sine(cr, (72.0, 45.0), (22.0, 28.0), 2.8, palette.result);
+    set_source(cr, palette.source);
     cr.set_line_width(2.0);
     cr.arc(104.0, 38.0, 7.0, 0.0, std::f64::consts::TAU);
     cr.arc(104.0, 61.0, 7.0, 0.0, std::f64::consts::TAU);
     let _ = cr.stroke();
 }
 
-fn draw_reverse_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
+fn draw_reverse_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
     draw_wave(
         cr,
         (14.0, 48.0),
         (38.0, 36.0),
         &[0.25, 0.45, 0.8, 0.35],
         false,
+        palette,
     );
-    draw_arrow(cr, (72.0, 48.0), (52.0, 48.0), (0.45, 0.33, 1.0, 0.95));
+    draw_arrow(cr, (72.0, 48.0), (52.0, 48.0), palette.arrow);
     draw_wave(
         cr,
         (78.0, 48.0),
         (36.0, 36.0),
         &[0.35, 0.8, 0.45, 0.25],
         true,
+        palette,
     );
 }
 
-fn draw_merge_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
+fn draw_merge_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
     draw_wave(
         cr,
         (12.0, 34.0),
         (36.0, 24.0),
         &[0.25, 0.55, 0.35, 0.65],
         false,
+        palette,
     );
     draw_wave(
         cr,
@@ -2881,27 +3241,34 @@ fn draw_merge_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
         (36.0, 24.0),
         &[0.65, 0.35, 0.55, 0.25],
         false,
+        palette,
     );
-    draw_arrow(cr, (52.0, 48.0), (72.0, 48.0), (0.45, 0.33, 1.0, 0.95));
+    draw_arrow(cr, (52.0, 48.0), (72.0, 48.0), palette.arrow);
     draw_wave(
         cr,
         (78.0, 48.0),
         (36.0, 38.0),
         &[0.25, 0.55, 0.35, 0.65, 0.65, 0.35],
         false,
+        palette,
     );
 }
 
-fn draw_export_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
+fn draw_export_illustration(
+    cr: &gtk::cairo::Context,
+    _size: (f64, f64),
+    palette: &IllustrationPalette,
+) {
     draw_wave(
         cr,
         (12.0, 52.0),
         (42.0, 36.0),
         &[0.25, 0.65, 0.35, 0.85, 0.45],
         false,
+        palette,
     );
-    draw_arrow(cr, (56.0, 52.0), (76.0, 52.0), (0.45, 0.33, 1.0, 0.95));
-    set_source(cr, (0.71, 0.48, 1.0, 0.95));
+    draw_arrow(cr, (56.0, 52.0), (76.0, 52.0), palette.arrow);
+    set_source(cr, palette.result);
     cr.set_line_width(2.0);
     cr.rectangle(84.0, 25.0, 25.0, 42.0);
     cr.move_to(99.0, 25.0);
@@ -2913,6 +3280,7 @@ fn draw_export_illustration(cr: &gtk::cairo::Context, _size: (f64, f64)) {
         (17.0, 16.0),
         &[0.2, 0.55, 0.3, 0.45],
         false,
+        palette,
     );
 }
 
@@ -2922,11 +3290,12 @@ fn draw_wave(
     size: (f64, f64),
     amplitudes: &[f64],
     reversed: bool,
+    palette: &IllustrationPalette,
 ) {
     let color = if reversed {
-        (0.71, 0.48, 1.0, 0.95)
+        palette.result
     } else {
-        (0.33, 0.86, 1.0, 0.9)
+        palette.source
     };
     draw_bars(cr, origin.0, origin.1 + size.1 / 2.0, amplitudes, color);
 }
@@ -3010,8 +3379,8 @@ fn draw_arrow(
     let _ = cr.fill();
 }
 
-fn draw_cut_line(cr: &gtk::cairo::Context, x: f64, height: f64) {
-    set_source(cr, (0.96, 0.38, 0.42, 0.95));
+fn draw_cut_line(cr: &gtk::cairo::Context, x: f64, height: f64, palette: &IllustrationPalette) {
+    set_source(cr, palette.cut);
     cr.set_line_width(2.0);
     cr.move_to(x, 18.0);
     cr.line_to(x, height - 18.0);
@@ -3027,17 +3396,14 @@ fn css_color(
     name: &str,
     fallback: (f64, f64, f64),
 ) -> (f64, f64, f64) {
-    widget
-        .style_context()
-        .lookup_color(name)
-        .map(|color| {
-            (
-                f64::from(color.red()),
-                f64::from(color.green()),
-                f64::from(color.blue()),
-            )
-        })
-        .unwrap_or(fallback)
+    crate::ui::style::theme_color(widget, name, fallback)
+}
+
+fn choice_dropdown<S: AsRef<str>>(items: &[S], selected: u32) -> gtk::DropDown {
+    let labels: Vec<&str> = items.iter().map(AsRef::as_ref).collect();
+    let dropdown = gtk::DropDown::from_strings(&labels);
+    dropdown.set_selected(selected);
+    dropdown
 }
 
 fn number_spin(min: f64, max: f64, step: f64, digits: u32, value: f64) -> gtk::SpinButton {
@@ -3094,49 +3460,6 @@ fn recording_subtitle(_duration: Option<Duration>) -> String {
     gettext("Saved recording")
 }
 
-/// Reads a WAV file's duration from its header (fmt byte-rate + data size),
-/// avoiding a full decode of the audio data.
-fn recording_duration(path: &Path) -> Option<Duration> {
-    use std::io::Read;
-
-    let mut file = std::fs::File::open(path).ok()?;
-    let mut header = [0u8; 8192];
-    let read = file.read(&mut header).ok()?;
-    let bytes = &header[..read];
-
-    if bytes.len() < 12 || &bytes[0..4] != b"RIFF" || &bytes[8..12] != b"WAVE" {
-        return None;
-    }
-
-    let mut byte_rate = None;
-    let mut data_size = None;
-    let mut offset = 12;
-    while offset + 8 <= bytes.len() {
-        let chunk_id = &bytes[offset..offset + 4];
-        let chunk_size =
-            u32::from_le_bytes(bytes.get(offset + 4..offset + 8)?.try_into().ok()?) as usize;
-        match chunk_id {
-            b"fmt " => {
-                byte_rate = Some(u32::from_le_bytes(
-                    bytes.get(offset + 16..offset + 20)?.try_into().ok()?,
-                ));
-            }
-            b"data" => {
-                data_size = Some(chunk_size);
-                break;
-            }
-            _ => {}
-        }
-        offset += 8 + chunk_size + (chunk_size % 2);
-    }
-
-    let byte_rate = byte_rate.filter(|rate| *rate > 0)?;
-    let data_size = data_size?;
-    Some(Duration::from_secs_f64(
-        data_size as f64 / f64::from(byte_rate),
-    ))
-}
-
 /// Formats a recording's modification time as a localized date and time.
 fn recording_date(path: &Path) -> Option<String> {
     let modified = std::fs::metadata(path).ok()?.modified().ok()?;
@@ -3146,7 +3469,7 @@ fn recording_date(path: &Path) -> Option<String> {
         .as_secs() as i64;
     let datetime = glib::DateTime::from_unix_local(seconds).ok()?;
     datetime
-        .format("%d/%m/%Y %H:%M")
+        .format("%x %R")
         .ok()
         .map(|formatted| formatted.to_string())
 }

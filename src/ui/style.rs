@@ -1,3 +1,5 @@
+use gtk::prelude::*;
+
 const STYLE: &str = r#"
 window,
 .app-bg {
@@ -260,7 +262,7 @@ windowhandle,
   border: 1px solid alpha(@window_fg_color, 0.12);
   border-radius: 16px;
   padding: 14px;
-  box-shadow: 0 -8px 32px alpha(black, 0.5);
+  box-shadow: 0 -6px 24px alpha(black, 0.14);
 }
 
 .panel-subtitle {
@@ -371,7 +373,9 @@ windowhandle,
 }
 
 .recording-row:hover {
-  background-color: shade(@card_bg_color, 1.04);
+  /* An fg-tinted overlay reads on both white (light) and translucent (dark)
+     cards, unlike shade() which is invisible on pure white. */
+  background-image: linear-gradient(alpha(@window_fg_color, 0.05), alpha(@window_fg_color, 0.05));
 }
 
 .recording-row.selected {
@@ -590,6 +594,7 @@ windowhandle,
 }
 
 .tool-dialog spinbutton,
+.tool-dialog dropdown,
 .tool-dialog combobox {
   min-width: 150px;
 }
@@ -674,9 +679,114 @@ windowhandle,
 }
 "#;
 
+/// libadwaita named colors that [`theme_color`] can resolve for custom drawing.
+const THEME_COLORS: &[&str] = &[
+    "accent_color",
+    "accent_bg_color",
+    "accent_fg_color",
+    "destructive_color",
+    "destructive_bg_color",
+    "destructive_fg_color",
+    "success_color",
+    "success_bg_color",
+    "success_fg_color",
+    "warning_color",
+    "warning_bg_color",
+    "warning_fg_color",
+    "error_color",
+    "error_bg_color",
+    "error_fg_color",
+    "window_bg_color",
+    "window_fg_color",
+    "view_bg_color",
+    "view_fg_color",
+    "card_bg_color",
+    "card_fg_color",
+    "card_shade_color",
+    "headerbar_bg_color",
+    "headerbar_fg_color",
+    "popover_bg_color",
+    "popover_fg_color",
+    "dialog_bg_color",
+    "dialog_fg_color",
+    "shade_color",
+    "borders",
+];
+
+const PROBE_CLASS_PREFIX: &str = "theme-probe-";
+
+thread_local! {
+    /// Unparented widget used to resolve named colors through the CSS
+    /// cascade, replacing the deprecated `StyleContext::lookup_color`.
+    static THEME_PROBE: gtk::Box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+}
+
+/// Resolves a libadwaita named color (e.g. `"accent_color"`) for the current
+/// light/dark variant and accent. Translucent colors (such as `card_bg_color`
+/// in dark mode) are composited over `window_bg_color`, so the result is the
+/// colour actually seen on screen. Unknown names return `fallback`.
+pub fn theme_color(
+    widget: &impl IsA<gtk::Widget>,
+    name: &str,
+    fallback: (f64, f64, f64),
+) -> (f64, f64, f64) {
+    let Some(color) = theme_rgba(widget, name) else {
+        return fallback;
+    };
+    let rgb = rgba_tuple(&color);
+    let alpha = f64::from(color.alpha());
+    if alpha >= 0.999 || name == "window_bg_color" {
+        return rgb;
+    }
+
+    let base = theme_rgba(widget, "window_bg_color")
+        .map(|base| rgba_tuple(&base))
+        .unwrap_or(fallback);
+    (
+        rgb.0 * alpha + base.0 * (1.0 - alpha),
+        rgb.1 * alpha + base.1 * (1.0 - alpha),
+        rgb.2 * alpha + base.2 * (1.0 - alpha),
+    )
+}
+
+/// Like [`theme_color`], but returns the raw color including its alpha.
+pub fn theme_rgba(widget: &impl IsA<gtk::Widget>, name: &str) -> Option<gtk::gdk::RGBA> {
+    if !THEME_COLORS.contains(&name) {
+        return None;
+    }
+
+    let class = format!("{PROBE_CLASS_PREFIX}{name}");
+    THEME_PROBE.with(|probe| {
+        if probe.display() != widget.as_ref().display() {
+            return None;
+        }
+        // Toggling the class invalidates the probe's style, so `color()`
+        // recomputes it from the current stylesheet (dark/light, accent).
+        probe.add_css_class(&class);
+        let color = probe.color();
+        probe.remove_css_class(&class);
+        Some(color)
+    })
+}
+
+fn rgba_tuple(color: &gtk::gdk::RGBA) -> (f64, f64, f64) {
+    (
+        f64::from(color.red()),
+        f64::from(color.green()),
+        f64::from(color.blue()),
+    )
+}
+
+fn probe_css() -> String {
+    THEME_COLORS
+        .iter()
+        .map(|name| format!(".{PROBE_CLASS_PREFIX}{name} {{ color: @{name}; }}\n"))
+        .collect()
+}
+
 pub fn load() {
     let provider = gtk::CssProvider::new();
-    provider.load_from_data(STYLE);
+    provider.load_from_data(&format!("{STYLE}\n{}", probe_css()));
 
     if let Some(display) = gtk::gdk::Display::default() {
         gtk::IconTheme::for_display(&display).add_search_path(local_icon_dir());
